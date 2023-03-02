@@ -2,6 +2,9 @@
 {
     public class EarnedBadge : EarnedEarnable
     {
-        // TODO: finish later.
+        public int BadgeId { get; set; }
+        public Badge Badge { get; set; }
+        public DateTime DateAwarded { get; set; } = DateTime.Now;
+        public int AwardedBy { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace BadgeTracker.Data
     public class Badge : Earnable
     {
         [Key]
-        public int BadgeID { get; set; }
-        public string Prerequisites { get; set; }
+        public int Id { get; set; }
+        public Prerequisites Prerequisites { get; set; }
     }
 }

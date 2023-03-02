@@ -2,6 +2,7 @@
 {
     public class CompletedActivity : EarnedEarnable
     {
-        // TODO: Do something later.
+        public int ActivityId { get; set; }
+        public Activity Activity { get; set; }
     }
 }
