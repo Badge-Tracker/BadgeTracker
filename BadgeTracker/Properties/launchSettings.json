@@ -10,7 +10,6 @@
   "profiles": {
     "BadgeTracker": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7017;http://localhost:5017",
       "environmentVariables": {
