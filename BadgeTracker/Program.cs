@@ -1,12 +1,19 @@
 using BadgeTracker.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// Set connection string.
+builder.Services.AddDbContext<TrackerDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("BadgeTrackerConnection"));
+});
 builder.Services.AddAntDesign();
 
 var app = builder.Build();

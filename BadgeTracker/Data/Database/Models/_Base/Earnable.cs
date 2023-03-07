@@ -1,4 +1,6 @@
-﻿namespace BadgeTracker.Data
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BadgeTracker.Data
 {
     public abstract class Earnable
     {
