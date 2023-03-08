@@ -1,39 +1,14 @@
-﻿@page "/"
-
-<PageTitle>Home Page</PageTitle>
-
-<h1>Hello!</h1>
-
-Welcome to your new app.
-
-Below is the tree option for this homepage also doubling as the badge + activity tracker.
-
-<a href="/UserManagement">Link to Another Page</a>
+﻿
+@page "/UserManagement"
+@using System.Collections.Generic
+@using System.Linq
+@using AntDesign
+@using AntDesign.TableModels
 
 
-@*
-<div>
-    <TreeSelect TItem="string"
-                Style="width:100%;"
-                @bind-Value="value"
-                Placeholder="Please select"
-                AllowClear
-                TreeDefaultExpandAll>
-        <TreeNode TItem="string" Key="parent 1" Title="parent 1">
-            <TreeNode TItem="string" Key="parent 1-0" Title="parent 1-0">
-                <TreeNode TItem="string" Key="leaf1" Title="leaf1" />
-                <TreeNode TItem="string" Key="leaf2" Title="leaf2" />
-            </TreeNode>
-            <TreeNode TItem="string" Key="parent 1-1" Title="parent 1-1">
-                <TreeNode TItem="string" Key="leaf3">
-                    <TitleTemplate>
-                        <b Style="color:#08c;">leaf3</b>
-                    </TitleTemplate>
-                </TreeNode>
-            </TreeNode>
-        </TreeNode>
-    </TreeSelect>
-</div>
+<h3>User Management</h3>
+
+
 
 <Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
@@ -47,26 +22,26 @@ Below is the tree option for this homepage also doubling as the badge + activity
                 <Input @bind-Value="editCache[data.Id].data.Name" />
             }
         </Column>
-        <Column TData="string" Title="Age">
-            @if (!editCache[data.Id].edit)
-            {
-                @data.Age
-            }
-            else
-            {
-                <Input @bind-Value="editCache[data.Id].data.Age" />
-            }
+
+        <Column TData="string" Title="Prerequisites">
+        <Dropdown @ref="@_dropdown">
+            <Overlay>
+                <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
+                    <MenuItem Id="1">Clicking me will not close the menu.</MenuItem>
+                    <MenuItem Id="2">Clicking me will not close the menu also.</MenuItem>
+                    <MenuItem Id="3">Clicking me will close the menu.</MenuItem>
+                </Menu>
+            </Overlay>
+            <ChildContent>
+                <a class="ant-dropdown-link" @onclick:preventDefault>
+                    Hover me <Icon Type="down" />
+                </a>
+            </ChildContent>
+        </Dropdown>
         </Column>
-        <Column TData="string" Title="Address">
-            @if (!editCache[data.Id].edit)
-            {
-                @data.Address
-            }
-            else
-            {
-                <Input @bind-Value="editCache[data.Id].data.Address" />
-            }
-        </Column>
+
+
+
         <ActionColumn Title="Action">
             @if (!editCache[data.Id].edit)
             {
@@ -76,15 +51,22 @@ Below is the tree option for this homepage also doubling as the badge + activity
             {
                 <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
                 <Popconfirm Title="Sure to cancel?"
-                            OnConfirm="() => cancelEdit(data.Id)"
-                            OkText="Yes"
-                            CancelText="No">
+                        OnConfirm="() => cancelEdit(data.Id)"
+                        OkText="Yes"
+                        CancelText="No">
                     <a>Cancel</a>
                 </Popconfirm>
             }
         </ActionColumn>
     </ChildContent>
 </Table>
+
+
+
+
+
+       
+
 
 <style>
     .save {
@@ -129,14 +111,21 @@ Below is the tree option for this homepage also doubling as the badge + activity
 
     protected override void OnInitialized()
     {
-        listOfData = Enumerable.Range(0, 20).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
+        listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
         listOfData.ForEach(item =>
         {
             editCache[item.Id] = (false, item);
         });
     }
 
-    private string value = "leaf3";
+    private Dropdown _dropdown;
+
+    private async void HandleMenuClick(MenuItem item)
+    {
+        if (item.Id == "3")
+        {
+            await _dropdown.Close();
+        }
+    }
 
 }
-*@
