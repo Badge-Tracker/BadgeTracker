@@ -1,6 +1,6 @@
 ﻿@page "/BadgeManagement"
 
-<h3>Badge Management</h3>
+<h3>Badge and Activity Management</h3>
 
 
 
@@ -37,20 +37,24 @@
 
 
         <ActionColumn Title="Action">
-            @if (!editCache[data.Id].edit)
-            {
-                <a @onclick="() => startEdit(data.Id)">Edit</a>
-            }
-            else
-            {
-                <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                <Popconfirm Title="Sure to cancel?"
-                            OnConfirm="() => cancelEdit(data.Id)"
-                            OkText="Yes"
-                            CancelText="No">
-                    <a>Cancel</a>
-                </Popconfirm>
-            }
+            <a href="EditBadge">Edit</a>
+            @*
+                @if (!editCache[data.Id].edit)
+                {
+                    <a @onclick="() => startEdit(data.Id)">Edit</a>
+                }
+                else
+                {
+
+                    <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
+                    <Popconfirm Title="Sure to cancel?"
+                                OnConfirm="() => cancelEdit(data.Id)"
+                                OkText="Yes"
+                                CancelText="No">
+                        <a>Cancel</a>
+                    </Popconfirm>
+                }
+            *@
         </ActionColumn>
     </ChildContent>
 </Table>
