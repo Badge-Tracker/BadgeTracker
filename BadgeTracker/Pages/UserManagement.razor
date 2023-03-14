@@ -42,22 +42,20 @@
 
 
 
-        <ActionColumn Title="Action">
-            @if (!editCache[data.Id].edit)
-            {
-                <a @onclick="() => startEdit(data.Id)">Edit</a>
-            }
-            else
-            {
-                <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                <Popconfirm Title="Sure to cancel?"
-                        OnConfirm="() => cancelEdit(data.Id)"
-                        OkText="Yes"
-                        CancelText="No">
-                    <a>Cancel</a>
-                </Popconfirm>
-            }
+        <ActionColumn Title="Edit Person" Width="10%">
+            <a href="Person" class="centered-icon"><i class="material-icons">edit</i></a>
         </ActionColumn>
+
+        <ActionColumn Title="Badges" Width="10%">
+            
+            <a href="AddBadge/@data.Id"><i class="material-icons">add_box</i></a>
+            <a href="AddBadge/@data.Id"><i class="material-icons">delete</i></a>
+            
+            
+        </ActionColumn>
+
+
+        
     </ChildContent>
 </Table>
 
@@ -71,6 +69,17 @@
 <style>
     .save {
         margin-right: 8px;
+    }
+
+    .centered-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .centered-icon i {
+        margin: 0 auto;
     }
 </style>
 
@@ -111,6 +120,7 @@
 
     protected override void OnInitialized()
     {
+        //listOfData = Enumerable.Range(0, 100).Select(i => new User { UserId = i, Name = $"Person {i}", Email = $"no@thankyou.com", Role = new Role = null}).ToList();
         listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
         listOfData.ForEach(item =>
         {
