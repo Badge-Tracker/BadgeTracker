@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 
+string DB_CONNECTION = "BadgeTrackerConnection";
+
 var builder = WebApplication.CreateBuilder(args);
+
+DbContextFactory.SetConnectionString(DB_CONNECTION);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -12,7 +16,7 @@ builder.Services.AddServerSideBlazor();
 // Set connection string.
 builder.Services.AddDbContext<TrackerDbContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("BadgeTrackerConnection"));
+    options.UseSqlite(builder.Configuration.GetConnectionString(DB_CONNECTION));
 });
 builder.Services.AddAntDesign();
 

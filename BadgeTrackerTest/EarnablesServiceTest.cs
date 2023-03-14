@@ -10,8 +10,7 @@ namespace BadgeTrackerTest
         {
             DbContextFactory.SetConnectionString("BadgeTrackerConnection");
 
-            TrackerDbContext context = DbContextFactory.CreateInstance();
-            DbInitializer.Initialize(context);
+            //DbInitializer.Initialize();
         }
 
         [TestMethod]
