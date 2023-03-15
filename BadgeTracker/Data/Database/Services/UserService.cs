@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace BadgeTracker.Data.Database.Services
+namespace BadgeTracker.Data
 {
-    public class UserService
+    public class UserService : IUserService
     {
         public async Task<User> GetUserById(int id)
         {

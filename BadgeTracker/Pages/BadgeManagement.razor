@@ -1,21 +1,16 @@
 ﻿@page "/BadgeManagement"
 
-<h3>Badge Management</h3>
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+
+<h3>Badge and Activity Management</h3>
 
 
 
-<Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+<Table DataSource="listOfData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
-        <Column TData="string" Title="Name">
-            @if (!editCache[data.Id].edit)
-            {
-                @data.Name
-            }
-            else
-            {
-                <Input @bind-Value="editCache[data.Id].data.Name" />
-            }
-        </Column>
+        <PropertyColumn Property="b=>b.Name"></PropertyColumn>
 
         <Column TData="string" Title="Prerequisites">
             <Dropdown @ref="@_dropdown">
@@ -37,29 +32,27 @@
 
 
         <ActionColumn Title="Action">
-            @if (!editCache[data.Id].edit)
-            {
-                <a @onclick="() => startEdit(data.Id)">Edit</a>
-            }
-            else
-            {
-                <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                <Popconfirm Title="Sure to cancel?"
-                            OnConfirm="() => cancelEdit(data.Id)"
-                            OkText="Yes"
-                            CancelText="No">
-                    <a>Cancel</a>
-                </Popconfirm>
-            }
+            <a href="EditBadge">Edit</a>
+            @*
+                @if (!editCache[data.Id].edit)
+                {
+                    <a @onclick="() => startEdit(data.Id)">Edit</a>
+                }
+                else
+                {
+
+                    <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
+                    <Popconfirm Title="Sure to cancel?"
+                                OnConfirm="() => cancelEdit(data.Id)"
+                                OkText="Yes"
+                                CancelText="No">
+                        <a>Cancel</a>
+                    </Popconfirm>
+                }
+            *@
         </ActionColumn>
     </ChildContent>
 </Table>
-
-
-
-
-
-
 
 
 <style>
@@ -69,47 +62,48 @@
 </style>
 
 @code{
+    //record ItemData
+    //{
+    //    public string Id { get; set; }
+    //    public string Name { get; set; }
+    //    public int Age { get; set; }
+    //    public string Address { get; set; }
+    //};
 
-    record ItemData
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public string Address { get; set; }
-    };
-
-    IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
-    List<ItemData> listOfData = new();
+    //IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
+    //List<ItemData> listOfData = new();
+    List<Data.Badge> listOfData;
 
     int i = 0;
     string editId;
 
     void startEdit(string id)
     {
-        var data = editCache[id];
-        editCache[id] = (true, data.data with { }); // add a copy in cache
+        //var data = editCache[id];
+        //editCache[id] = (true, data.data with { }); // add a copy in cache
     }
 
     void cancelEdit(string id)
     {
-        var data = listOfData.FirstOrDefault(item => item.Id == id);
-        editCache[id] = (false, data); // recovery
+        //var data = listOfData.FirstOrDefault(item => item.Id == id);
+        //editCache[id] = (false, data); // recovery
     }
 
     void saveEdit(string id)
     {
-        var index = listOfData.FindIndex(item => item.Id == id);
-        listOfData[index] = editCache[id].data; // apply the copy to data source
-        editCache[id] = (false, listOfData[index]); // don't affect rows in editing
+        //var index = listOfData.FindIndex(item => item.Id == id);
+        //listOfData[index] = editCache[id].data; // apply the copy to data source
+        //editCache[id] = (false, listOfData[index]); // don't affect rows in editing
     }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
-        listOfData.ForEach(item =>
-        {
-            editCache[item.Id] = (false, item);
-        });
+        //listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
+        //listOfData.ForEach(item =>
+        //{
+        //    editCache[item.Id] = (false, item);
+        //});
+        listOfData = await EarnablesService.GetAllBadges();
     }
 
     private Dropdown _dropdown;

@@ -2,7 +2,7 @@
 
 namespace BadgeTracker.Data
 {
-    public class EarnablesService
+    public class EarnablesService : IEarnablesService
     {
         public async Task<List<Badge>> GetAllBadges()
         {
