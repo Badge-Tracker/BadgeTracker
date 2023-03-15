@@ -1,0 +1,111 @@
+﻿@page "/Person"
+<h3>Person</h3>
+
+@using System.Text.Json;
+
+<div class="container-fluid">
+    <Form Model="@model"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          Size="@model.Size">
+          <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                <RadioGroup @bind-Value="@context.Size">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                        </RadioGroup>
+                        </FormItem>
+          </div>
+
+          <div class="row">
+              
+              <div class="col-md-6 offset-md-3">
+                    <FormItem Label="Name">
+                            <Input @bind-Value="@context.InputName"  />
+                    </FormItem>
+
+                    <FormItem Label="Email">
+                            <Input @bind-Value="@context.InputEmail"  />
+                    </FormItem>
+                    
+                    @*
+                    <FormItem Label="Birthday">
+                    <DatePicker @bind-Value="@context.DatePicker" />
+                    </FormItem>
+                
+                    <FormItem Label="Group">
+                    <Select Mode="default"
+                    DataSource="@_persons"
+                    @bind-Value="@context.Name"
+                    LabelName="@nameof(Person.Name)"
+                    ValueName="@nameof(Person.Name)">
+                    </Select>
+                    </FormItem>
+
+                    <FormItem Label="Age">
+                    <AntDesign.InputNumber @bind-Value="@context.Number" />
+                    </FormItem>
+
+                    <FormItem Label="InputArea">
+                    <TextArea placeholder="Input any other important information here" />
+                    </FormItem>
+                    *@
+
+                    </div>
+                    <div class="d-flex justify-content-center">
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <button HtmlType="submit" class="btn btn-primary">
+                        Submit
+                        </button>
+                    </FormItem>
+                    </div>
+                    </div>
+                    
+
+                    </Form>
+                    
+
+</div>
+             
+                
+
+                @code
+                {
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+        public string InputName { get; set; } = "Enter their name here";
+        public string InputEmail { get; set; } = "Enter their email here";
+        
+        
+       
+       
+        
+        public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
+    }
+
+    private Model model = new Model();
+
+    
+    record Person(string Name);
+    private List<Person> _persons = new List<Person>
+        {
+            new Person("John"),
+            new Person("Lucy"),
+            new Person("Jack"),
+            new Person("Emily"),
+        };
+
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+}
+
