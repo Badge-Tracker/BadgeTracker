@@ -1,6 +1,6 @@
-﻿@page "/EditBadge"
+﻿@page "/CreateBadge"
 
-<h3>Edit Badge or Activity</h3>
+<h3>Create a new Badge or Activity</h3>
 
 
 @using System.Text.Json;
@@ -99,10 +99,11 @@
             </div>
         </div>
 
-        <!--
-    <FormItem WrapperColOffset="8" WrapperColSpan="16">
-        <div class="d-flex justify-content-center>-->
-
+        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <button HtmlType="submit" class="btn btn-primary">
+                Submit
+            </button>
+        </FormItem>-->
         <div class="d-flex justify-content-center">
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
                 <button HtmlType="submit" class="btn btn-primary">
@@ -110,6 +111,7 @@
                 </button>
             </FormItem>
         </div>
+
     </Form>
 </div>
 
@@ -238,5 +240,4 @@
     }
 
 }
-
 
