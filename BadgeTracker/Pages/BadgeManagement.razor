@@ -3,16 +3,57 @@
 @using BadgeTracker.Data;
 
 @inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager;
+@inject ModalService _modalService;
 
-<h3>Badge and Activity Management</h3>
+<!--  **** MODAL CODE BELOW -> BUT DIDNT WORK ****
+    This is the modal stuff... but it wasn't working ... so not sure what to do. It worked no problem on the ant design
+    but didn't work here....
+<Button OnClick="@ShowConfirm">Confirm</Button>
 
 
+<Button OnClick="@ShowConfirmNotClose">Confirm</Button>
+    -->
+
+<!-- **** POP CONFIRM CODE BELOW ****
+ this is the ONLY code that came with the popconfirms....
+<Popconfirm Title="Are you sure?" Icon="close-circle">
+    <a>Delete</a>
+</Popconfirm>
+<br />
+<Popconfirm Title="Are you sure?">
+    <IconTemplate>
+        <Icon Type="question-circle" Style="color: red" />
+    </IconTemplate>
+    <ChildContent>
+        <a>Delete</a>
+    </ChildContent>
+</Popconfirm>
+    -->
+
+
+<div class="container p-2 ">
+    <div class="row">
+        <div class="col">
+            <h3>Badge and Activity Management</h3>
+        </div>
+        <div class="col d-flex justify-content-center">
+            <button onclick="@CreateBadge" class="btn btn-primary">
+                Create Badge or Activity
+            </button>
+        </div>
+    </div>
+</div>
 
 <Table DataSource="listOfData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
         <PropertyColumn Property="b=>b.Name"></PropertyColumn>
 
-        <Column TData="string" Title="Prerequisites">
+
+        <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
+
+
+        <Column TData="string" Title="Badge Prerequisites">
             <Dropdown @ref="@_dropdown">
                 <Overlay>
                     <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
@@ -23,7 +64,7 @@
                 </Overlay>
                 <ChildContent>
                     <a class="ant-dropdown-link" @onclick:preventDefault>
-                        Hover me <Icon Type="down" />
+                        Hover to see prerequisites <Icon Type="down" />
                     </a>
                 </ChildContent>
             </Dropdown>
@@ -31,8 +72,14 @@
 
 
 
-        <ActionColumn Title="Action">
-            <a href="EditBadge">Edit</a>
+        <ActionColumn Title="Action" class="text-center" Width="10%">
+            <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+            <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
+            <Popconfirm Title="Are you sure you want to delete badge?" Icon="close-circle">
+                <a class="text-danger"><i class="material-icons">delete</i></a>
+            </Popconfirm>
+
+
             @*
                 @if (!editCache[data.Id].edit)
                 {
@@ -53,6 +100,10 @@
         </ActionColumn>
     </ChildContent>
 </Table>
+
+
+
+
 
 
 <style>
@@ -114,6 +165,49 @@
         {
             await _dropdown.Close();
         }
+    }
+
+    private void CreateBadge()
+    {
+        NavigationManager.NavigateTo("/CreateBadge");
+    }
+
+    <!-- Modal Code Below -->
+    private Func<ModalClosingEventArgs, Task> OnOkClick = async (e) =>
+    {
+        await Task.Delay(1000);
+    };
+
+    private void ShowConfirm()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+        {
+            Title = "Do you want to delete these items?",
+            Icon = icon,
+            Content = "When clicked the OK button, this dialog will be closed after 1 second",
+            OnOk = OnOkClick
+        });
+    }
+
+    private Func<ModalClosingEventArgs, Task> OnNotOkClick = async (e) =>
+    {
+        await Task.Delay(1000);
+        e.Cancel = true;
+    };
+
+    private void ShowConfirmNotClose()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+        {
+            Title = "Do you want to delete these items?",
+            Icon = icon,
+            Content = "When clicked the OK button, this dialog will cancel the closing in 1 second",
+            OnOk = OnNotOkClick
+        });
     }
 
 }
