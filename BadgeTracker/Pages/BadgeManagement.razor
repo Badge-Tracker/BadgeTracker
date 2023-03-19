@@ -37,78 +37,128 @@
         <div class="col">
             <h3>Badge and Activity Management</h3>
         </div>
-        <div class="col d-flex justify-content-end">
-            <div class="align-self-end" style="width:200px;">
-                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" />
-                <br />
-                <br />
-            </div>
+        <div class="col">
+                <Select @bind-value="@isFilterByBadge"
+                        DefaultValue="false"
+                        TItem="string"
+                        TItemValue="bool">
+                        <SelectOptions>
+			                <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+			                <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+		                </SelectOptions>
+                </Select>
         </div>
+        <div class="col d-flex justify-content-center">
+            <button onclick="@CreateBadge" class="btn btn-primary">
+                Create Badge or Activity
+            </button>
         </div>
-        <div class="row">
-            <div class="col d-flex justify-content-end">
-                <button onclick="@CreateBadge" class="btn btn-primary">
-                    Create Badge or Activity
-                </button>
-            </div>
-    </div>  
+    </div>
 </div>
 
-<Table DataSource="@filteredData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
-    <ChildContent Context="data">
-        <PropertyColumn Property="b=>b.Name"></PropertyColumn>
+@if (isFilterByBadge)
+{
+    <Table DataSource="badges" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+        <ChildContent Context="data">
+            <PropertyColumn Property="b=>b.Name"></PropertyColumn>
 
 
-        <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
+            <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
 
 
-        <Column TData="string" Title="Badge Prerequisites">
-            <Dropdown @ref="@_dropdown">
-                <Overlay>
-                    <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
-                        <MenuItem Id="1">Clicking me will not close the menu.</MenuItem>
-                        <MenuItem Id="2">Clicking me will not close the menu also.</MenuItem>
-                        <MenuItem Id="3">Clicking me will close the menu.</MenuItem>
-                    </Menu>
-                </Overlay>
-                <ChildContent>
-                    <a class="ant-dropdown-link" @onclick:preventDefault>
-                        Hover to see prerequisites <Icon Type="down" />
-                    </a>
-                </ChildContent>
-            </Dropdown>
-        </Column>
+            <Column TData="string" Title="Badge Prerequisites">
+                <Dropdown @ref="@_dropdown">
+                    <Overlay>
+                        <Menu AutoCloseDropdown="@false">
+                            @foreach (Data.Badge badge in data.Prerequisites.Badges)
+                            {
+                                prereqCounter++;
+                                <MenuItem Id="@prereqCounter.ToString()">@badge.Name</MenuItem>
+                            }
+                            @foreach (Activity activity in data.Prerequisites.Activities)
+                            {
+                                prereqCounter++;
+                                <MenuItem Id="@prereqCounter.ToString()">@activity.Name</MenuItem>
+                            }
+                        </Menu>
+                    </Overlay>
+                    <ChildContent>
+                        <a class="ant-dropdown-link" @onclick:preventDefault>
+                            Hover to see prerequisites <Icon Type="down" />
+                        </a>
+                    </ChildContent>
+                </Dropdown>
+            </Column>
 
 
 
-        <ActionColumn Title="Action" class="text-center" Width="10%">
-            <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
-            <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
-            <Popconfirm Title="Are you sure you want to delete badge?" Icon="close-circle">
-                <a class="text-danger"><i class="material-icons">delete</i></a>
-            </Popconfirm>
+            <ActionColumn Title="Action" class="text-center" Width="10%">
+                <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+                <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
+                <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete badge?" Icon="close-circle">
+                    <a class="text-danger"><i class="material-icons">delete</i></a>
+                </Popconfirm>
 
 
-            @*
-                @if (!editCache[data.Id].edit)
-                {
-                    <a @onclick="() => startEdit(data.Id)">Edit</a>
-                }
-                else
-                {
+                @*
+                    @if (!editCache[data.Id].edit)
+                    {
+                        <a @onclick="() => startEdit(data.Id)">Edit</a>
+                    }
+                    else
+                    {
 
-                    <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                    <Popconfirm Title="Sure to cancel?"
-                                OnConfirm="() => cancelEdit(data.Id)"
-                                OkText="Yes"
-                                CancelText="No">
-                        <a>Cancel</a>
-                    </Popconfirm>
-                }
-            *@
-        </ActionColumn>
-    </ChildContent>
-</Table>
+                        <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
+                        <Popconfirm Title="Sure to cancel?"
+                                    OnConfirm="() => cancelEdit(data.Id)"
+                                    OkText="Yes"
+                                    CancelText="No">
+                            <a>Cancel</a>
+                        </Popconfirm>
+                    }
+                *@
+            </ActionColumn>
+        </ChildContent>
+    </Table>
+}
+else
+{
+    <Table DataSource="activities" TItem="Activity" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+        <ChildContent Context="data">
+            <PropertyColumn Property="a=>a.Name"></PropertyColumn>
+
+
+            <PropertyColumn Title="Description" Property="a=>a.Description"></PropertyColumn>
+
+            <ActionColumn Title="Action" class="text-center" Width="10%">
+                <a href="EditActivity/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+                <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
+                <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete activity?" Icon="close-circle">
+                    <a class="text-danger"><i class="material-icons">delete</i></a>
+                </Popconfirm>
+
+
+                @*
+                    @if (!editCache[data.Id].edit)
+                    {
+                        <a @onclick="() => startEdit(data.Id)">Edit</a>
+                    }
+                    else
+                    {
+
+                        <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
+                        <Popconfirm Title="Sure to cancel?"
+                                    OnConfirm="() => cancelEdit(data.Id)"
+                                    OkText="Yes"
+                                    CancelText="No">
+                            <a>Cancel</a>
+                        </Popconfirm>
+                    }
+                *@
+            </ActionColumn>
+        </ChildContent>
+    </Table>
+}
 
 
 
@@ -122,6 +172,12 @@
 </style>
 
 @code{
+    private Dictionary<int, List<Earnable>> prereqs = new();
+    private bool isFilterByBadge = true;
+    private List<Data.Badge> badges;
+    private List<Activity> activities;
+    private int prereqCounter = 0;
+
 
     string txtValue { get; set; }
     List<Data.Badge> filteredData => listOfData.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.Contains(txtValue)).ToList();
@@ -136,49 +192,33 @@
 
     //IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
     //List<ItemData> listOfData = new();
-    List<Data.Badge> listOfData;
+
 
     int i = 0;
     string editId;
 
-    void startEdit(string id)
-    {
-        //var data = editCache[id];
-        //editCache[id] = (true, data.data with { }); // add a copy in cache
-    }
-
-    void cancelEdit(string id)
-    {
-        //var data = listOfData.FirstOrDefault(item => item.Id == id);
-        //editCache[id] = (false, data); // recovery
-    }
-
-    void saveEdit(string id)
-    {
-        //var index = listOfData.FindIndex(item => item.Id == id);
-        //listOfData[index] = editCache[id].data; // apply the copy to data source
-        //editCache[id] = (false, listOfData[index]); // don't affect rows in editing
-    }
-
     protected async override Task OnInitializedAsync()
     {
-        //listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
-        //listOfData.ForEach(item =>
-        //{
-        //    editCache[item.Id] = (false, item);
-        //});
-        listOfData = await EarnablesService.GetAllBadges();
+        await initLists();
     }
 
-    private Dropdown _dropdown;
-
-    private async void HandleMenuClick(MenuItem item)
+    private async Task OnDeleteConfirm(Earnable earnable)
     {
-        if (item.Id == "3")
-        {
-            await _dropdown.Close();
-        }
+        if (isFilterByBadge)
+            await EarnablesService.DeleteBadge(earnable as Data.Badge);
+        else
+            await EarnablesService.DeleteActivity(earnable as Activity);
+    
+        await initLists();
+        StateHasChanged();
     }
+
+    private async Task initLists()
+    {
+        badges = await EarnablesService.GetAllBadges();
+        activities = await EarnablesService.GetAllActivities();
+    }
+    private Dropdown _dropdown;
 
     private void CreateBadge()
     {

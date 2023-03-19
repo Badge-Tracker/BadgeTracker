@@ -1,20 +1,30 @@
 ﻿@page "/CreateBadge"
 
+@using System.Text.Json;
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+
 <h3>Create a new Badge or Activity</h3>
 
 
-@using System.Text.Json;
 
 
 <div class="container-fluid">
-    <Form Model="@model"
+    @if (isCreated)
+    {
+        <h3>Created!</h3>
+    }
+    else if (isBadge)
+    {
+        <Form Model="@newBadge"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
+          Size="@formSize">
 
         <div class="d-flex justify-content-center">
             <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@context.Size">
+                <RadioGroup @bind-Value="@formSize">
                     <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
                     <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
                     <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
@@ -24,76 +34,65 @@
 
         <div class="row">
             <div class="col">
-                <div class="imageItem">
-                    @inject IMessageService _message
-
-                    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                            Name="avatar"
-                            Class="avatar-uploader d-flex justify-content-center"
-                            ListType="picture-card"
-                            ShowUploadList="false"
-                            BeforeUpload="BeforeUpload"
-                            OnChange="HandleChange">
-                        @if (!string.IsNullOrWhiteSpace(imageUrl))
-                        {
-                            <img src="@imageUrl" alt="avatar" style="width: 100%" />
-                        }
-                        else
-                        {
-                            <div>
-                                <Icon Spin="loading" Type="@(loading?"Loading":"plus")"></Icon>
-                                <div className="ant-upload-text">Upload Image</div>
-                            </div>
-                        }
-                    </Upload>
-
-                </div>
                 <div class="item">
                     <FormItem Label="Name">
-                        <Input @bind-Value="@context.InputBadgeName" Placeholder="Enter a Name" />
+                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
                     </FormItem>
                 </div>
                 <div class="item">
-                    <FormItem Label="Age Group">
-                        <Select Mode="default"
-                                DataSource="@_persons"
-                                @bind-Value="@context.Name"
-                                LabelName="@nameof(Person.Name)"
-                                ValueName="@nameof(Person.Name)"
-                                Placeholder="Select age group">
-                        </Select>
-                    </FormItem>
-                </div>
-                <div class="item">
-                    <FormItem Label="Badge Type">
-                        <Select Mode="default"
-                                DataSource="@_persons"
-                                @bind-Value="@context.Name"
-                                LabelName="@nameof(Person.Name)"
-                                ValueName="@nameof(Person.Name)"
-                                Placeholder="Select badge or activity">
+                    <FormItem Label="Type">
+                        <Select @bind-value="@isBadge"
+                                DefaultValue="true"
+                                TItem="string"
+                                TItemValue="bool">
+                                <SelectOptions>
+			                        <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+			                        <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+		                        </SelectOptions>
                         </Select>
                     </FormItem>
                 </div>
             </div>
-            <div class="col"
-             <div class="item">
-                <FormItem Label="Prerequisites">
-                    <Select Mode="multiple"
-                            DataSource="@_persons"
-                            @bind-Values="@context.Names"
-                            LabelName="@nameof(Person.Name)"
-                            ValueName="@nameof(Person.Name)"
-                            Placeholder="Select one or more prerequisites">
-                    </Select>
-                </FormItem>
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Prerequisite Badges">
+                        <Select Mode="multiple"
+                                @bind-Values="@badgeSelections"
+                                Placeholder="Select one or more badge prerequisites"
+                                TItemValue="Data.Badge"
+                                TItem="Data.Badge">
+                                <SelectOptions>
+			                        @foreach(Data.Badge badge in badges)
+			                        {
+				                        <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+			                        }
+		                        </SelectOptions>
+                        </Select>
+                    </FormItem>
+                </div>
             </div>
-        </div>
-
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Prerequisite Activities">
+                        <Select Mode="multiple"
+                                @bind-Values="@activitySelections"
+                                Placeholder="Select one or more activity prerequisites"
+                                TItemValue="Activity"
+                                TItem="Activity">
+                                <SelectOptions>
+			                        @foreach(Activity activity in activities)
+			                        {
+				                        <SelectOption TItemValue="Activity" TItem="Activity" Value=@activity Label=@activity.Name />
+			                        }
+		                        </SelectOptions>
+                        </Select>
+                    </FormItem>
+                </div>
+            </div>
             <div class="col">
                 <div class="item">
                     <FormItem Label="Description">
-                        <TextArea Placeholder="Enter a Description" /> @*@bind-Value="@context.Input"*@
+                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
                     </FormItem>
                 </div>
             </div>
@@ -113,6 +112,70 @@
         </div>
 
     </Form>
+    }
+    else
+    {
+        <Form Model="@newActivity"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          Size="@formSize">
+
+        <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                <RadioGroup @bind-Value="@formSize">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Name">
+                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
+                    </FormItem>
+                </div>
+                <div class="item">
+                    <FormItem Label="Type">
+                        <Select @bind-value="@isBadge"
+                                DefaultValue="false"
+                                TItem="string"
+                                TItemValue="bool">
+                                <SelectOptions>
+			                        <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+			                        <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+		                        </SelectOptions>
+                        </Select>
+                    </FormItem>
+                </div>
+            </div>
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Description">
+                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
+                    </FormItem>
+                </div>
+            </div>
+        </div>
+
+        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <button HtmlType="submit" class="btn btn-primary">
+                Submit
+            </button>
+        </FormItem>-->
+        <div class="d-flex justify-content-center">
+            <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Submit
+                </button>
+            </FormItem>
+        </div>
+
+    </Form>
+    }
+
 </div>
 
 
@@ -164,80 +227,41 @@
 
 @code
 {
-    public class Model
+    private string formSize = AntSizeLDSType.Small;
+    private Data.Badge newBadge = new();
+    private Activity newActivity = new();
+    private bool isBadge = true;
+    private bool isCreated = false;
+    private List<Data.Badge> badges;
+    private List<Activity> activities;
+    private IEnumerable<Data.Badge> badgeSelections;
+    private IEnumerable<Activity> activitySelections;
+
+
+    protected async override Task OnInitializedAsync()
     {
-        public string Size { get; set; } = AntSizeLDSType.Small;
-        public string InputBadgeName { get; set; } = "Input Badge Here";
-        public string InputArea { get; set; } = "inputArea";
-        public string Name { get; set; }
-        public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
+        badges = await EarnablesService.GetAllBadges();
+        activities = await EarnablesService.GetAllActivities();
     }
 
-    private Model model = new Model();
-
-    private List<string> autoCompleteOptions = new List<string> { "Primary", "Junior", "Senior", "Undergraduate", "Master", "Doctor" };
-
-    record Person(string Name);
-    private List<Person> _persons = new List<Person>
-{
-            new Person("John"),
-            new Person("Lucy"),
-            new Person("Jack"),
-            new Person("Emily"),
-        };
-
-    private void OnFinish(EditContext editContext)
+    private async void OnFinish(EditContext editContext)
     {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+        if (isBadge)
+        {
+            newBadge.Prerequisites.Badges = badgeSelections?.ToList() ?? new List<Data.Badge>();
+            newBadge.Prerequisites.Activities = activitySelections?.ToList() ?? new List<Activity>();
+            await EarnablesService.CreateNewBadge(newBadge);
+        }
+        else
+        {
+            await EarnablesService.CreateNewActivity(newActivity);
+        }
+        isCreated = true;
     }
 
     private void OnFinishFailed(EditContext editContext)
     {
-        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
-
-    @*Image uploading code below *@
-
-    bool loading = false;
-
-    string imageUrl;
-
-    bool BeforeUpload(UploadFileItem file)
-    {
-        var isJpgOrPng = file.Type == "image/jpeg" || file.Type == "image/png";
-        if (!isJpgOrPng)
-        {
-            _message.Error("You can only upload JPG/PNG file!");
-        }
-        var isLt2M = file.Size / 1024 / 1024 < 2;
-        if (!isLt2M)
-        {
-            _message.Error("Image must smaller than 2MB!");
-        }
-        return isJpgOrPng && isLt2M;
-    }
-
-    void HandleChange(UploadInfo fileinfo)
-    {
-        loading = fileinfo.File.State == UploadState.Uploading;
-
-        if (fileinfo.File.State == UploadState.Success)
-        {
-            imageUrl = fileinfo.File.ObjectURL;
-        }
-        InvokeAsync(StateHasChanged);
-    }
-
-    public class ResponseModel
-    {
-        public string name { get; set; }
-
-        public string status { get; set; }
-
-        public string url { get; set; }
-
-        public string thumbUrl { get; set; }
-    }
-
 }
 
