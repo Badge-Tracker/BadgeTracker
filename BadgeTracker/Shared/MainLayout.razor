@@ -1,16 +1,35 @@
 ﻿@inherits LayoutComponentBase
 
 
-<Menu Mode=MenuMode.Horizontal style="background-color: #FF1493;">
+<Menu Mode=MenuMode.Horizontal style="background-color: grey; ">
     <MenuItem Key="app" class="menuitem">
-        <a href="/UserManagement">Girl Scout Management</a>
-    </MenuItem>
-    <MenuItem Key="activity" class="menuitem">
-        Activity Management
+        <a href="/UserManagement" style="color: black;">Girl Scout Management</a>
     </MenuItem>
     <MenuItem Key="badge" class="menuitem">
-        <a href="/BadgeManagement">Badge Management</a>
+        <a href="/BadgeManagement" style="color: black;">Badge Management</a>
     </MenuItem>
+   
+    <div class="floatright">
+        <a href="/" style="font-size:20px; color:black; margin-right:20px;">
+            Badge Tracker
+
+
+
+        </a>
+            
+                <a href="/">
+                    <Icon Type="home" class="icon" style="font-size: 20px; margin-right:20px; color:black"/>
+                   </a>
+
+
+            <a href="/">
+            <Icon Type="logout" Theme="outline" style="font-size: 20px; margin-right:20px; color:black;" />
+            </a>
+            
+
+
+
+    </div>
 </Menu>
 
 @code
@@ -46,11 +65,31 @@
         font-weight: bold;
     }
 
-        .menuitem :hover {
+        a.menuitem :hover {
             color: black;
         }
 
+    .menuitem :visited {
+        color: black;
+        font-weight: bold;
+    }
+
     menuitem ant-menu-item ant-menu-item-selected {
         background-color: white;
+    }
+
+    .floatright {
+        float: right;
+        justify-content: space-evenly;
+        padding-right: 20px;
+    }
+
+    .icon {
+        height:50px;
+    }
+
+    img {
+        width: 160px;
+        height: 40px;
     }
 </style>

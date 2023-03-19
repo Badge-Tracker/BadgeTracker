@@ -1,0 +1,242 @@
+﻿@page "/EditBadge"
+
+<h3>Edit Badge or Activity</h3>
+
+
+@using System.Text.Json;
+
+
+<div class="container-fluid">
+    <Form Model="@model"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          Size="@model.Size">
+
+        <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                <RadioGroup @bind-Value="@context.Size">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="imageItem">
+                    @inject IMessageService _message
+
+                    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                            Name="avatar"
+                            Class="avatar-uploader d-flex justify-content-center"
+                            ListType="picture-card"
+                            ShowUploadList="false"
+                            BeforeUpload="BeforeUpload"
+                            OnChange="HandleChange">
+                        @if (!string.IsNullOrWhiteSpace(imageUrl))
+                        {
+                            <img src="@imageUrl" alt="avatar" style="width: 100%" />
+                        }
+                        else
+                        {
+                            <div>
+                                <Icon Spin="loading" Type="@(loading?"Loading":"plus")"></Icon>
+                                <div className="ant-upload-text">Upload Image</div>
+                            </div>
+                        }
+                    </Upload>
+
+                </div>
+                <div class="item">
+                    <FormItem Label="Name">
+                        <Input @bind-Value="@context.InputBadgeName" Placeholder="Enter a Name" />
+                    </FormItem>
+                </div>
+                <div class="item">
+                    <FormItem Label="Age Group">
+                        <Select Mode="default"
+                                DataSource="@_persons"
+                                @bind-Value="@context.Name"
+                                LabelName="@nameof(Person.Name)"
+                                ValueName="@nameof(Person.Name)"
+                                Placeholder="Select age group">
+                        </Select>
+                    </FormItem>
+                </div>
+                <div class="item">
+                    <FormItem Label="Badge Type">
+                        <Select Mode="default"
+                                DataSource="@_persons"
+                                @bind-Value="@context.Name"
+                                LabelName="@nameof(Person.Name)"
+                                ValueName="@nameof(Person.Name)"
+                                Placeholder="Select badge or activity">
+                        </Select>
+                    </FormItem>
+                </div>
+            </div>
+            <div class="col"
+             <div class="item">
+                <FormItem Label="Prerequisites">
+                    <Select Mode="multiple"
+                            DataSource="@_persons"
+                            @bind-Values="@context.Names"
+                            LabelName="@nameof(Person.Name)"
+                            ValueName="@nameof(Person.Name)"
+                            Placeholder="Select one or more prerequisites">
+                    </Select>
+                </FormItem>
+            </div>
+        </div>
+
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Description">
+                        <TextArea Placeholder="Enter a Description" /> @*@bind-Value="@context.Input"*@
+                    </FormItem>
+                </div>
+            </div>
+        </div>
+
+        <!--
+    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+        <div class="d-flex justify-content-center>-->
+
+        <div class="d-flex justify-content-center">
+            <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Submit
+                </button>
+            </FormItem>
+        </div>
+    </Form>
+</div>
+
+
+<style>
+    .avatar-uploader > .ant-upload {
+        width: 128px;
+        height: 128px;
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .row {
+        display: flex;
+        flex-basis: 100%;
+        margin-bottom: 10px;
+    }
+
+    .col-8 {
+        flex-basis: 66.67%;
+        padding-right: 10px;
+    }
+
+    .col-2 {
+        flex-basis: 16.67%;
+        padding-right: 10px;
+    }
+
+    .item {
+        padding: 10px;
+    }
+
+    .imageItem {
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .center {
+        margin: auto;
+        width: 50%;
+        border: 3px solid green;
+        padding: 10px;
+    }
+</style>
+
+@code
+{
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+        public string InputBadgeName { get; set; } = "Input Badge Here";
+        public string InputArea { get; set; } = "inputArea";
+        public string Name { get; set; }
+        public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
+    }
+
+    private Model model = new Model();
+
+    private List<string> autoCompleteOptions = new List<string> { "Primary", "Junior", "Senior", "Undergraduate", "Master", "Doctor" };
+
+    record Person(string Name);
+    private List<Person> _persons = new List<Person>
+{
+            new Person("John"),
+            new Person("Lucy"),
+            new Person("Jack"),
+            new Person("Emily"),
+        };
+
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    @*Image uploading code below *@
+
+    bool loading = false;
+
+    string imageUrl;
+
+    bool BeforeUpload(UploadFileItem file)
+    {
+        var isJpgOrPng = file.Type == "image/jpeg" || file.Type == "image/png";
+        if (!isJpgOrPng)
+        {
+            _message.Error("You can only upload JPG/PNG file!");
+        }
+        var isLt2M = file.Size / 1024 / 1024 < 2;
+        if (!isLt2M)
+        {
+            _message.Error("Image must smaller than 2MB!");
+        }
+        return isJpgOrPng && isLt2M;
+    }
+
+    void HandleChange(UploadInfo fileinfo)
+    {
+        loading = fileinfo.File.State == UploadState.Uploading;
+
+        if (fileinfo.File.State == UploadState.Success)
+        {
+            imageUrl = fileinfo.File.ObjectURL;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    public class ResponseModel
+    {
+        public string name { get; set; }
+
+        public string status { get; set; }
+
+        public string url { get; set; }
+
+        public string thumbUrl { get; set; }
+    }
+
+}
+
+

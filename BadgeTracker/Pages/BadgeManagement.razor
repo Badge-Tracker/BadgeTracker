@@ -1,23 +1,59 @@
 ﻿@page "/BadgeManagement"
 
-<h3>Badge Management</h3>
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager;
+@inject ModalService _modalService;
+
+<!--  **** MODAL CODE BELOW -> BUT DIDNT WORK ****
+    This is the modal stuff... but it wasn't working ... so not sure what to do. It worked no problem on the ant design
+    but didn't work here....
+<Button OnClick="@ShowConfirm">Confirm</Button>
 
 
+<Button OnClick="@ShowConfirmNotClose">Confirm</Button>
+    -->
 
-<Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+<!-- **** POP CONFIRM CODE BELOW ****
+ this is the ONLY code that came with the popconfirms....
+<Popconfirm Title="Are you sure?" Icon="close-circle">
+    <a>Delete</a>
+</Popconfirm>
+<br />
+<Popconfirm Title="Are you sure?">
+    <IconTemplate>
+        <Icon Type="question-circle" Style="color: red" />
+    </IconTemplate>
+    <ChildContent>
+        <a>Delete</a>
+    </ChildContent>
+</Popconfirm>
+    -->
+
+
+<div class="container p-2 ">
+    <div class="row">
+        <div class="col">
+            <h3>Badge and Activity Management</h3>
+        </div>
+        <div class="col d-flex justify-content-center">
+            <button onclick="@CreateBadge" class="btn btn-primary">
+                Create Badge or Activity
+            </button>
+        </div>
+    </div>
+</div>
+
+<Table DataSource="listOfData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
-        <Column TData="string" Title="Name">
-            @if (!editCache[data.Id].edit)
-            {
-                @data.Name
-            }
-            else
-            {
-                <Input @bind-Value="editCache[data.Id].data.Name" />
-            }
-        </Column>
+        <PropertyColumn Property="b=>b.Name"></PropertyColumn>
 
-        <Column TData="string" Title="Prerequisites">
+
+        <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
+
+
+        <Column TData="string" Title="Badge Prerequisites">
             <Dropdown @ref="@_dropdown">
                 <Overlay>
                     <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
@@ -28,7 +64,7 @@
                 </Overlay>
                 <ChildContent>
                     <a class="ant-dropdown-link" @onclick:preventDefault>
-                        Hover me <Icon Type="down" />
+                        Hover to see prerequisites <Icon Type="down" />
                     </a>
                 </ChildContent>
             </Dropdown>
@@ -36,26 +72,34 @@
 
 
 
-        <ActionColumn Title="Action">
-            @if (!editCache[data.Id].edit)
-            {
-                <a @onclick="() => startEdit(data.Id)">Edit</a>
-            }
-            else
-            {
-                <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                <Popconfirm Title="Sure to cancel?"
-                            OnConfirm="() => cancelEdit(data.Id)"
-                            OkText="Yes"
-                            CancelText="No">
-                    <a>Cancel</a>
-                </Popconfirm>
-            }
+        <ActionColumn Title="Action" class="text-center" Width="10%">
+            <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+            <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
+            <Popconfirm Title="Are you sure you want to delete badge?" Icon="close-circle">
+                <a class="text-danger"><i class="material-icons">delete</i></a>
+            </Popconfirm>
+
+
+            @*
+                @if (!editCache[data.Id].edit)
+                {
+                    <a @onclick="() => startEdit(data.Id)">Edit</a>
+                }
+                else
+                {
+
+                    <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
+                    <Popconfirm Title="Sure to cancel?"
+                                OnConfirm="() => cancelEdit(data.Id)"
+                                OkText="Yes"
+                                CancelText="No">
+                        <a>Cancel</a>
+                    </Popconfirm>
+                }
+            *@
         </ActionColumn>
     </ChildContent>
 </Table>
-
-
 
 
 
@@ -69,47 +113,48 @@
 </style>
 
 @code{
+    //record ItemData
+    //{
+    //    public string Id { get; set; }
+    //    public string Name { get; set; }
+    //    public int Age { get; set; }
+    //    public string Address { get; set; }
+    //};
 
-    record ItemData
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public string Address { get; set; }
-    };
-
-    IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
-    List<ItemData> listOfData = new();
+    //IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
+    //List<ItemData> listOfData = new();
+    List<Data.Badge> listOfData;
 
     int i = 0;
     string editId;
 
     void startEdit(string id)
     {
-        var data = editCache[id];
-        editCache[id] = (true, data.data with { }); // add a copy in cache
+        //var data = editCache[id];
+        //editCache[id] = (true, data.data with { }); // add a copy in cache
     }
 
     void cancelEdit(string id)
     {
-        var data = listOfData.FirstOrDefault(item => item.Id == id);
-        editCache[id] = (false, data); // recovery
+        //var data = listOfData.FirstOrDefault(item => item.Id == id);
+        //editCache[id] = (false, data); // recovery
     }
 
     void saveEdit(string id)
     {
-        var index = listOfData.FindIndex(item => item.Id == id);
-        listOfData[index] = editCache[id].data; // apply the copy to data source
-        editCache[id] = (false, listOfData[index]); // don't affect rows in editing
+        //var index = listOfData.FindIndex(item => item.Id == id);
+        //listOfData[index] = editCache[id].data; // apply the copy to data source
+        //editCache[id] = (false, listOfData[index]); // don't affect rows in editing
     }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
-        listOfData.ForEach(item =>
-        {
-            editCache[item.Id] = (false, item);
-        });
+        //listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
+        //listOfData.ForEach(item =>
+        //{
+        //    editCache[item.Id] = (false, item);
+        //});
+        listOfData = await EarnablesService.GetAllBadges();
     }
 
     private Dropdown _dropdown;
@@ -120,6 +165,49 @@
         {
             await _dropdown.Close();
         }
+    }
+
+    private void CreateBadge()
+    {
+        NavigationManager.NavigateTo("/CreateBadge");
+    }
+
+    <!-- Modal Code Below -->
+    private Func<ModalClosingEventArgs, Task> OnOkClick = async (e) =>
+    {
+        await Task.Delay(1000);
+    };
+
+    private void ShowConfirm()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+        {
+            Title = "Do you want to delete these items?",
+            Icon = icon,
+            Content = "When clicked the OK button, this dialog will be closed after 1 second",
+            OnOk = OnOkClick
+        });
+    }
+
+    private Func<ModalClosingEventArgs, Task> OnNotOkClick = async (e) =>
+    {
+        await Task.Delay(1000);
+        e.Cancel = true;
+    };
+
+    private void ShowConfirmNotClose()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+        {
+            Title = "Do you want to delete these items?",
+            Icon = icon,
+            Content = "When clicked the OK button, this dialog will cancel the closing in 1 second",
+            OnOk = OnNotOkClick
+        });
     }
 
 }
