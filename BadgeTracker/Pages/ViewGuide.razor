@@ -1,0 +1,123 @@
+﻿@page "/ViewGuide/{Id}"
+<h3>ViewGuide</h3>
+<h4>@ID</h4>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col">
+            <h4>Name: </h4>
+            <p> this is where name would go</p>
+            <br>
+            <h4>Email: </h4>
+            <p> this is where email would go</p>
+
+            <br>
+            <br>
+            <div class="d-flex justify-content-center">
+                <Popconfirm Title="Are you sure you want to delete this person?" Icon="close-circle">
+                    <a class="text-danger"><i class="material-icons">delete</i></a>
+                </Popconfirm>
+            </div>
+        </div>
+        <div class="col">
+            <h3>Badges Obtained</h3>
+            <Tree @ref="tree" DefaultExpandAll Draggable BlockNode
+                        ShowIcon DataSource="games"
+                  TitleExpression="x => x.DataItem.Text"
+                  ChildrenExpression="x => x.DataItem.Items"
+                  IconExpression="x => x.DataItem.Icon"
+                  IsLeafExpression="x => x.DataItem.Items?.Count == 0"
+                  KeyExpression="x => x.DataItem.Id"
+                  TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
+            </Tree>
+        </div>
+    </div>
+   
+    
+
+
+</div>
+
+@code {
+
+    Tree<GameElement> tree;
+
+    string selectedKey;
+
+    GameElement selectedData;
+
+    TreeNode<GameElement> selectedNode;
+
+    List<GameElement> games = new()
+    {
+        new ("0-0","0-0")
+        {
+            Items = new List<GameElement>()
+            {
+                new ("0-0-0","0-0-0")
+                {
+                    Items = new List<GameElement>()
+                    {
+                        new ("0-0-0-0","0-0-0-0"),
+                        new ("0-0-0-1","0-0-0-1"),
+                        new ("0-0-0-2","0-0-0-2"),
+                    }
+                },
+                new ("0-0-1","0-0-1")
+                {
+                   Items = new List<GameElement>()
+                   {
+                       new ("0-0-1-0","0-0-1-0"),
+                       new ("0-0-1-1","0-0-1-1"),
+                       new ("0-0-1-2","0-0-1-2"),
+                   }
+                },
+                new ("0-0-2","0-0-2")
+                {
+                   Items = new List<GameElement>()
+                   {
+                       new ("0-0-2-0","0-0-2-0"),
+                       new ("0-0-2-1","0-0-2-1"),
+                       new ("0-0-2-2","0-0-2-2"),
+                   }
+                 },
+            }
+        },
+        new ("0-1","0-1")
+        {
+            Items = new List<GameElement>()
+            {
+                new ("0-1-0","0-1-0"),
+                new ("0-1-1","0-1-0"),
+                new ("0-1-2","0-1-2"),
+            }
+        },
+        new ("0-2","0-2")
+        {
+            Items = new List<GameElement>()
+            {
+                new ("0-2-0","0-2-0"),
+                new ("0-2-1","0-2-1"),
+            }
+        }
+    };
+
+    private record GameElement(string Id, string Text, string Icon = null)
+    {
+        public List<GameElement> Items { get; set; } = new List<GameElement>();
+    }
+
+    void onDrop(TreeEventArgs<GameElement> e)
+    {
+
+    }
+}
+
+
+
+    @code
+    {
+        [Parameter]
+        public string ID { get; set; }
+    }

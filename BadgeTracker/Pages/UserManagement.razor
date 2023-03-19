@@ -8,6 +8,15 @@
 
 <h3>User Management</h3>
 
+<a href="AddGuide">
+    <i class="material-icons">
+        
+        person_add
+        
+    </i>
+
+    Add a New Girl Guide
+</a>
 
 
 <Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
@@ -15,7 +24,7 @@
         <Column TData="string" Title="Name">
             @if (!editCache[data.Id].edit)
             {
-                @data.Name
+                <a href="ViewGuide/@data.Id">@data.Name</a>
             }
             else
             {
@@ -43,13 +52,13 @@
 
 
         <ActionColumn Title="Edit Person" Width="10%">
-            <a href="Person" class="centered-icon"><i class="material-icons">edit</i></a>
+            <a href="EditGuide/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
         </ActionColumn>
 
         <ActionColumn Title="Badges" Width="10%">
             
             <a href="AddBadge/@data.Id"><i class="material-icons">add_box</i></a>
-            <a href="AddBadge/@data.Id"><i class="material-icons">delete</i></a>
+            <a href="DeleteBadge/@data.Id"><i class="material-icons">delete</i></a>
             
             
         </ActionColumn>
