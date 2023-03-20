@@ -1,4 +1,4 @@
-﻿@page "/EditBadge/{Id}"
+﻿@page "/EditActivity/{Id}"
 
 @using System.Text.Json;
 @using BadgeTracker.Data;
@@ -17,7 +17,7 @@
     }
     else
     {
-        <Form Model="@newBadge"
+        <Form Model="@newActivity"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
           Size="@formSize">
@@ -37,42 +37,6 @@
                 <div class="item">
                     <FormItem Label="Name">
                         <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
-                    </FormItem>
-                </div>
-            </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Prerequisite Badges">
-                        <Select Mode="multiple"
-                                @bind-Values="@badgeSelections"
-                                Placeholder="Select one or more badge prerequisites"
-                                TItemValue="Data.Badge"
-                                TItem="Data.Badge">
-                                <SelectOptions>
-			                        @foreach(Data.Badge badge in badges)
-			                        {
-				                        <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-			                        }
-		                        </SelectOptions>
-                        </Select>
-                    </FormItem>
-                </div>
-            </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Prerequisite Activities">
-                        <Select Mode="multiple"
-                                @bind-Values="@activitySelections"
-                                Placeholder="Select one or more activity prerequisites"
-                                TItemValue="Activity"
-                                TItem="Activity">
-                                <SelectOptions>
-			                        @foreach(Activity activity in activities)
-			                        {
-				                        <SelectOption TItemValue="Activity" TItem="Activity" Value=@activity Label=@activity.Name />
-			                        }
-		                        </SelectOptions>
-                        </Select>
                     </FormItem>
                 </div>
             </div>
@@ -155,33 +119,19 @@
     public string Id { get; set; }
 
     private string formSize = AntSizeLDSType.Small;
-    private Data.Badge newBadge = new();
+    private Activity newActivity = new();
     private bool isUpdated = false;
-    private List<Data.Badge> badges;
-    private List<Activity> activities;
-    private IEnumerable<Data.Badge> badgeSelections;
-    private IEnumerable<Activity> activitySelections;
 
 
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(Id, out int id);
-        newBadge = await EarnablesService.GetBadgeById(id);
-
-        badges = await EarnablesService.GetAllBadges();
-        badges.Remove(newBadge);
-        badgeSelections = newBadge.Prerequisites.Badges;
-        activitySelections = newBadge.Prerequisites.Activities;
-
-        activities = await EarnablesService.GetAllActivities();
-        StateHasChanged();
+        newActivity = await EarnablesService.GetActivityById(id);
     }
 
     private async void OnFinish(EditContext editContext)
     {
-        newBadge.Prerequisites.Badges = badgeSelections?.ToList() ?? new List<Data.Badge>();
-        newBadge.Prerequisites.Activities = activitySelections?.ToList() ?? new List<Activity>();
-        await EarnablesService.UpdateBadge(newBadge);
+        await EarnablesService.UpdateActivity(newActivity);
         isUpdated = true;
     }
 

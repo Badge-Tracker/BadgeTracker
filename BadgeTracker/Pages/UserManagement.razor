@@ -110,25 +110,6 @@
     int i = 0;
     string editId;
 
-    void startEdit(string id)
-    {
-        var data = editCache[id];
-        editCache[id] = (true, data.data with { }); // add a copy in cache
-    }
-
-    void cancelEdit(string id)
-    {
-        var data = listOfData.FirstOrDefault(item => item.Id == id);
-        editCache[id] = (false, data); // recovery
-    }
-
-    void saveEdit(string id)
-    {
-        var index = listOfData.FindIndex(item => item.Id == id);
-        listOfData[index] = editCache[id].data; // apply the copy to data source
-        editCache[id] = (false, listOfData[index]); // don't affect rows in editing
-    }
-
     protected override void OnInitialized()
     {
         //listOfData = Enumerable.Range(0, 100).Select(i => new User { UserId = i, Name = $"Person {i}", Email = $"no@thankyou.com", Role = new Role = null}).ToList();
