@@ -1,6 +1,7 @@
-﻿namespace BadgeTracker.Data
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BadgeTracker.Data
 {
-    // TODO: Composite key : [PrimaryKey(nameof(EarnableID), nameof(UserID))]
     public abstract class EarnedEarnable
     {
         public int UserId { get; set; }
