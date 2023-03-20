@@ -1,15 +1,23 @@
 ﻿@page "/AddGuide"
+
+
+@inject IUserService UserService;
+
 <h3 class ="text-center">Add A Guide</h3>
 
 @using System.Text.Json;
- 
-<div class="container-fluid">
-    <Form Model="@model"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
 
-        <div class="d-flex justify-content-center">
+@if (isCreated)
+{
+    <h3>Created</h3>
+}
+else {
+    <div class="container-fluid">
+        <Form Model="@user"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@formSize">
+          <div class="d-flex justify-content-center">
             <FormItem Label="Form Size">
                 <RadioGroup @bind-Value="@context.Size">
                     <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
@@ -19,37 +27,36 @@
             </FormItem>
         </div>
 
-                <div class="row">
-                    <div class="col">
+                        <div class="row">
+                          <div class="col">
+                          </div>
+                            <div class="col">
+                                <FormItem Label="Name">
+                                <br />
+                                <Input @bind-Value="@context.Name" />
+                                </FormItem>
+
+                                <FormItem Label="Email">
+                                <Input @bind-Value="@context.Email" />
+                                </FormItem>
+                                <FormItem class="col-md-12 text-center">
+                                  <button HtmlType="submit" class="btn btn-primary">
+                                    Add Guide
+                                  </button>
+                                </FormItem>
+
+               
+
+                            </div>
+                            
+                        </div>
+
+
+                        </Form>
+
+
                     </div>
-                    <div class="col">
-                        
-                        <br />
-                        <FormItem Label="Name">
-                        <Input @bind-Value="@context.InputName" />
-                        </FormItem>
 
-                        <FormItem Label="Email">
-                        <Input @bind-Value="@context.InputEmail" />
-                        </FormItem>
-
-                        <FormItem class="col-md-12 text-center">
-                            <button HtmlType="submit" class="btn btn-primary">
-                                Add Guide
-                            </button>
-                        </FormItem>
-                    
-
-                    </div>
-                    <div class="col">
-                    </div>
-                </div>
-
-
-    </Form>
-
-
-</div>
 
 
 
@@ -71,6 +78,17 @@
     private Model model = new Model();
 
 
+    private User user = new();
+    private string formSize = AntSizeLDSType.Small;
+    private bool isCreated = false;
+
+    private async Task OnFinish(EditContext editContext)
+    {
+        await UserService.AddUser(user);
+        isCreated = true;
+        StateHasChanged();
+    }
+
     record Person(string Name);
     private List<Person> _persons = new List<Person>
         {
@@ -80,10 +98,6 @@
             new Person("Emily"),
         };
 
-    private void OnFinish(EditContext editContext)
-    {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
-    }
 
     private void OnFinishFailed(EditContext editContext)
     {

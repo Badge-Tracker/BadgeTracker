@@ -1,9 +1,11 @@
-﻿
-@page "/UserManagement"
+﻿@page "/UserManagement"
 @using System.Collections.Generic
 @using System.Linq
 @using AntDesign
 @using AntDesign.TableModels
+
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
 
 
 <h3>User Management</h3>
@@ -19,63 +21,44 @@
 </a>
 
 
-<Table DataSource="listOfData" TItem="ItemData" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+<Table DataSource="@users" TItem="User" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
         <Column TData="string" Title="Name">
-            @if (!editCache[data.Id].edit)
-            {
-                <a href="ViewGuide/@data.Id">@data.Name</a>
-            }
-            else
-            {
-                <Input @bind-Value="editCache[data.Id].data.Name" />
-            }
+            <a href="ViewGuide/@data.UserId">@data.Name</a>
         </Column>
 
-        <Column TData="string" Title="Earned Badges">
-        <Dropdown @ref="@_dropdown">
-            <Overlay>
-                <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
-                    <MenuItem Id="1">Clicking me will not close the menu.</MenuItem>
-                    <MenuItem Id="2">Clicking me will not close the menu also.</MenuItem>
-                    <MenuItem Id="3">Clicking me will close the menu.</MenuItem>
-                </Menu>
-            </Overlay>
-            <ChildContent>
-                <a class="ant-dropdown-link" @onclick:preventDefault>
-                    Hover to see badges <Icon Type="down" />
-                </a>
-            </ChildContent>
-        </Dropdown>
-        </Column>
-
-
-
-
+        <Column TData="string" Title="Badge Prerequisites">
+                <Dropdown @ref="@_dropdown">
+                    <Overlay>
+                        <Menu AutoCloseDropdown="@false">
+                            @foreach (EarnedBadge badge in earnedBadges[data.UserId])
+                            {
+                                prereqCounter++;
+                                <MenuItem Id="@prereqCounter.ToString()">@badge.Badge.Name</MenuItem>
+                            }
+                            @foreach (CompletedActivity activity in completedActivities[data.UserId])
+                            {
+                                prereqCounter++;
+                                <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Id</MenuItem>
+                            }
+                        </Menu>
+                    </Overlay>
+                    <ChildContent>
+                        <a class="ant-dropdown-link" @onclick:preventDefault>
+                            Hover to see prerequisites <Icon Type="down" />
+                        </a>
+                    </ChildContent>
+                </Dropdown>
+            </Column>
         <ActionColumn Title="Edit Person" Width="10%">
-            <a href="EditGuide/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
-
+            <a href="EditGuide/@data.UserId" class="centered-icon"><i class="material-icons">edit</i></a>
         </ActionColumn>
-        
         <ActionColumn Title="Badges" class="text-center" Width="10%">
-            
-            <a href="AddBadge/@data.Id"><i class="material-icons">add_box</i></a>
-            <a href="DeleteBadge/@data.Id"><i class="material-icons">delete</i></a>
-            
-            
+            <a href="AddBadge/@data.UserId"><i class="material-icons">add_box</i></a>
+            <a href="DeleteBadge/@data.UserId"><i class="material-icons">delete</i></a>
         </ActionColumn>
-
-
-        
     </ChildContent>
 </Table>
-
-
-
-
-
-       
-
 
 <style>
     .save {
@@ -110,33 +93,32 @@
     int i = 0;
     string editId;
 
-    void startEdit(string id)
+    private List<User> users;
+    private Dictionary<int, List<EarnedBadge>> earnedBadges = new();
+    private Dictionary<int, List<CompletedActivity>> completedActivities = new();
+    private int prereqCounter = 0;
+
+
+    protected async override Task OnInitializedAsync()
     {
-        var data = editCache[id];
-        editCache[id] = (true, data.data with { }); // add a copy in cache
+        await initLists();
     }
 
-    void cancelEdit(string id)
+    private async Task initLists()
     {
-        var data = listOfData.FirstOrDefault(item => item.Id == id);
-        editCache[id] = (false, data); // recovery
-    }
-
-    void saveEdit(string id)
-    {
-        var index = listOfData.FindIndex(item => item.Id == id);
-        listOfData[index] = editCache[id].data; // apply the copy to data source
-        editCache[id] = (false, listOfData[index]); // don't affect rows in editing
-    }
-
-    protected override void OnInitialized()
-    {
-        //listOfData = Enumerable.Range(0, 100).Select(i => new User { UserId = i, Name = $"Person {i}", Email = $"no@thankyou.com", Role = new Role = null}).ToList();
-        listOfData = Enumerable.Range(0, 100).Select(i => new ItemData { Id = $"{i}", Name = $"Edrward {i}", Age = 32, Address = $"London Park no. {i}" }).ToList();
-        listOfData.ForEach(item =>
+        users = await UserService.GetAllUsers();
+        foreach (User user in users)
         {
-            editCache[item.Id] = (false, item);
-        });
+            if (!earnedBadges.ContainsKey(user.UserId))
+                earnedBadges.Add(user.UserId, await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new());
+            else
+                earnedBadges[user.UserId] = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
+
+            if (!completedActivities.ContainsKey(user.UserId))
+                completedActivities.Add(user.UserId, await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new());
+            else
+                completedActivities[user.UserId] = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
+        }
     }
 
     private Dropdown _dropdown;

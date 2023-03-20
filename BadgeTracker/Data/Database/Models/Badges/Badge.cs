@@ -6,6 +6,6 @@ namespace BadgeTracker.Data
     {
         [Key]
         public int Id { get; set; }
-        public Prerequisites Prerequisites { get; set; }
+        public Prerequisites Prerequisites { get; set; } = new Prerequisites();
     }
 }

@@ -1,16 +1,24 @@
 ﻿@page "/ViewGuide/{Id}"
 
+
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
+
+
+
 <div class="container-fluid">
 
     <div class="row">
+
         <div class="col-2">
         </div>
         <div class="col-4">
             <h4 class="text-center">Name: </h4>
-            <p class="text-center"> this is where name would go</p>
+            <p class="text-center">@user.Name</p>
             <br>
             <h4 class="text-center">Email: </h4>
-            <p class="text-center"> this is where email would go</p>
+            <p class="text-center">@user.Email</p>
+
 
             <br>
             <br>
@@ -24,20 +32,29 @@
             
         </div>
         <div class="col-4">
-            <h3 class="text-center">Badges Obtained</h3>
-            <div class="d-flex justify-content-center">
-                <Tree @ref="tree" Draggable BlockNode
-                            ShowIcon DataSource="games"
-                      TitleExpression="x => x.DataItem.Text"
-                      ChildrenExpression="x => x.DataItem.Items"
-                      IconExpression="x => x.DataItem.Icon"
-                      IsLeafExpression="x => x.DataItem.Items?.Count == 0"
-                      KeyExpression="x => x.DataItem.Id"
-                      TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
-                </Tree>
+             <h3>Badges Obtained</h3>
+            @foreach (EarnedBadge badge in earnedBadges)
+            {
+                <p>@badge.Badge.Name</p>
+            }
+            @foreach (CompletedActivity activity in completedActivities)
+            {
+                <p>@activity.Activity.Name</p>
+            }
+            @*<Tree @ref="tree" DefaultExpandAll Draggable BlockNode
+                        ShowIcon DataSource="games"
+                  TitleExpression="x => x.DataItem.Text"
+                  ChildrenExpression="x => x.DataItem.Items"
+                  IconExpression="x => x.DataItem.Icon"
+                  IsLeafExpression="x => x.DataItem.Items?.Count == 0"
+                  KeyExpression="x => x.DataItem.Id"
+                  TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
+            </Tree>*@
             </div>
         </div>
+
         <div class="col-2">
+
         </div>
     </div>
    
@@ -113,6 +130,19 @@
     private record GameElement(string Id, string Text, string Icon = null)
     {
         public List<GameElement> Items { get; set; } = new List<GameElement>();
+    }
+
+    private User user;
+    private List<EarnedBadge> earnedBadges = new();
+    private List<CompletedActivity> completedActivities = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(ID, out int id);
+        user = await UserService.GetUserById(id);
+
+        earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
+        completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
     }
 
     void onDrop(TreeEventArgs<GameElement> e)
