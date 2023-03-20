@@ -1,5 +1,5 @@
 ﻿@page "/EditGuide/{Id}"
-
+<h3 class="text-center">Edit A Guide</h3>
 
 @using System.Text.Json;
 
@@ -8,7 +8,8 @@
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
           Size="@model.Size">
-          <div class="d-flex justify-content-center">
+
+        <div class="d-flex justify-content-center">
             <FormItem Label="Form Size">
                 <RadioGroup @bind-Value="@context.Size">
                     <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
@@ -16,34 +17,39 @@
                     <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
                 </RadioGroup>
             </FormItem>
-          </div>
+        </div>
 
-          <div class="row">
-              
-              <div class="col-md-6 offset-md-3">
-                    <FormItem Label="Name">
-                            <Input @bind-Value="@context.InputName"  />
-                    </FormItem>
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
 
-                    <FormItem Label="Email">
-                            <Input @bind-Value="@context.InputEmail"  />
-                    </FormItem>
-                    
-                    </div>
-                    <div class="d-flex justify-content-center">
-                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                        <button HtmlType="submit" class="btn btn-primary">
-                        Submit
-                        </button>
-                    </FormItem>
-                    </div>
-                    </div>
-                    
+                <br />
+                <FormItem Label="Name">
+                <Input @bind-Value="@context.InputName" />
+                </FormItem>
 
-                    </Form>
-                    
+                <FormItem Label="Email">
+                <Input @bind-Value="@context.InputEmail" />
+                </FormItem>
 
-</div>
+                <FormItem class="col-md-12 text-center">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Edit Guide
+                </button>
+                </FormItem>
+
+
+            </div>
+            <div class="col">
+            </div>
+        </div>
+
+
+    </Form>
+
+
+                </div>
              
                 
 

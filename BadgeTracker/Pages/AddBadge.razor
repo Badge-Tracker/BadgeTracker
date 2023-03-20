@@ -7,12 +7,22 @@
     <div class="col">
     </div>
     <div class="col">
-        <h3>Add Badge or Activity</h3>
+        <h3 class="text-center">Add Badge or Activity</h3>
         <Form Model="@model"
 
               OnFinish="OnFinish"
               OnFinishFailed="OnFinishFailed"
               Size="@model.Size">
+
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@context.Size">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                    </RadioGroup>
+                </FormItem>
+            </div>
         <FormItem Label="Select">
             <Select Mode="default"
                     DataSource="@_persons"

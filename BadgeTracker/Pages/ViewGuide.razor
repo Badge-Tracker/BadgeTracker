@@ -3,32 +3,41 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col">
-            <h4>Name: </h4>
-            <p> this is where name would go</p>
+        <div class="col-2">
+        </div>
+        <div class="col-4">
+            <h4 class="text-center">Name: </h4>
+            <p class="text-center"> this is where name would go</p>
             <br>
-            <h4>Email: </h4>
-            <p> this is where email would go</p>
+            <h4 class="text-center">Email: </h4>
+            <p class="text-center"> this is where email would go</p>
 
             <br>
             <br>
             <div class="d-flex justify-content-center">
                 <Popconfirm Title="Are you sure you want to delete this person?" Icon="close-circle">
-                    <a class="text-danger"><i class="material-icons">delete</i></a>
-                </Popconfirm>
+                    <button HtmlType="submit" class="btn btn-danger">
+                        Delete Guide
+                    </button>
+                </Popconfirm> 
+            </div>
+            
+        </div>
+        <div class="col-4">
+            <h3 class="text-center">Badges Obtained</h3>
+            <div class="d-flex justify-content-center">
+                <Tree @ref="tree" Draggable BlockNode
+                            ShowIcon DataSource="games"
+                      TitleExpression="x => x.DataItem.Text"
+                      ChildrenExpression="x => x.DataItem.Items"
+                      IconExpression="x => x.DataItem.Icon"
+                      IsLeafExpression="x => x.DataItem.Items?.Count == 0"
+                      KeyExpression="x => x.DataItem.Id"
+                      TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
+                </Tree>
             </div>
         </div>
-        <div class="col">
-            <h3>Badges Obtained</h3>
-            <Tree @ref="tree" DefaultExpandAll Draggable BlockNode
-                        ShowIcon DataSource="games"
-                  TitleExpression="x => x.DataItem.Text"
-                  ChildrenExpression="x => x.DataItem.Items"
-                  IconExpression="x => x.DataItem.Icon"
-                  IsLeafExpression="x => x.DataItem.Items?.Count == 0"
-                  KeyExpression="x => x.DataItem.Id"
-                  TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
-            </Tree>
+        <div class="col-2">
         </div>
     </div>
    
