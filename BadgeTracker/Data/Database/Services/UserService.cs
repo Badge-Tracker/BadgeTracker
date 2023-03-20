@@ -48,5 +48,77 @@ namespace BadgeTracker.Data
                 return null;
             }
         }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                return await dbContext.Users.ToListAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+                return null;
+            }
+        }
+        public async Task AddBadgeToUser(User user, Badge badge)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            EarnedBadge earnedBadge = new()
+            {
+                UserId = user.UserId,
+                BadgeId = badge.Id,
+                AwardedBy = 0,
+                CompletedBy = 0,
+            };
+
+            try
+            {
+                dbContext.EarnedBadges.Add(earnedBadge);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
+        public async Task AddActivityToUser(User user, Activity activity)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            CompletedActivity completedActivity = new()
+            {
+                ActivityId = activity.Id,
+                CompletedBy = 0
+            };
+
+            try
+            {
+                dbContext.CompletedActivities.Add(completedActivity);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.Update(user);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
     }
 }

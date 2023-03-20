@@ -71,7 +71,15 @@ namespace BadgeTracker.Data
 
             try
             {
-                return await dbContext.EarnedBadges.Where(eb => eb.UserId == userId).ToListAsync();
+                List<EarnedBadge> badges = await dbContext.EarnedBadges.Where(eb => eb.UserId == userId).ToListAsync();
+                
+                // TODO: EFCore should really be handling this. Fix later.
+                foreach(EarnedBadge badge in badges)
+                {
+                   badges.FirstOrDefault(b => b.BadgeId == badge.BadgeId).Badge = await GetBadgeById(badge.BadgeId);
+                }
+
+                return badges;
             }
             catch (Exception e)
             {
@@ -86,7 +94,15 @@ namespace BadgeTracker.Data
 
             try
             {
-                return await dbContext.CompletedActivities.Where(ca => ca.UserId == userId).ToListAsync();
+                 List<CompletedActivity> activities = await dbContext.CompletedActivities.Where(ca => ca.UserId == userId).ToListAsync();
+
+                // TODO: EFCore should really be handling this. Fix later.
+                foreach (CompletedActivity activity in activities)
+                {
+                    activities.FirstOrDefault(a => a.ActivityId == activity.ActivityId).Activity = await GetActivityById(activity.ActivityId);
+                }
+
+                return activities;
             }
             catch (Exception e)
             {

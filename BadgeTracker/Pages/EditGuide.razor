@@ -1,55 +1,56 @@
 ﻿@page "/EditGuide/{Id}"
+
+@using System.Text.Json;
+@inject IUserService UserService;
+
 <h3>EditGuide</h3>
 <h4>@ID</h4>
 
-@using System.Text.Json;
+@if (isUpdated)
+{
+    <h3>Updated!</h3>
+}
+else
+{
+    <div class="container-fluid">
+        <Form Model="@user"
+            OnFinish="OnFinish"
+            OnFinishFailed="OnFinishFailed"
+            Size="@formSize">
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                    </RadioGroup>
+                </FormItem>
+              </div>
 
-<div class="container-fluid">
-    <Form Model="@model"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
-          <div class="d-flex justify-content-center">
-            <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@context.Size">
-                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                        </RadioGroup>
-                        </FormItem>
-          </div>
-
-          <div class="row">
-              
-              <div class="col-md-6 offset-md-3">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
                     <FormItem Label="Name">
-                            <Input @bind-Value="@context.InputName"  />
+                        <Input @bind-Value="@context.Name"  />
                     </FormItem>
-
                     <FormItem Label="Email">
-                            <Input @bind-Value="@context.InputEmail"  />
+                        <Input @bind-Value="@context.Email"  />
                     </FormItem>
-                    
-                    </div>
-                    <div class="d-flex justify-content-center">
+                </div>
+                <div class="d-flex justify-content-center">
                     <FormItem WrapperColOffset="8" WrapperColSpan="16">
                         <button HtmlType="submit" class="btn btn-primary">
-                        Submit
+                            Submit
                         </button>
                     </FormItem>
-                    </div>
-                    </div>
-                    
-
-                    </Form>
-                    
-
-</div>
-             
+                </div>
+            </div>
+        </Form>
+    </div>
+}          
                 
 
                 @code
-                {
+{
     [Parameter]
     public string ID { get; set; }
     public class Model
@@ -58,17 +59,17 @@
         public string Size { get; set; } = AntSizeLDSType.Small;
         public string InputName { get; set; } = "Enter their name here";
         public string InputEmail { get; set; } = "Enter their email here";
-        
-        
-       
-       
-        
+
+
+
+
+
         public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
     }
 
     private Model model = new Model();
 
-    
+
     record Person(string Name);
     private List<Person> _persons = new List<Person>
         {
@@ -78,9 +79,21 @@
             new Person("Emily"),
         };
 
-    private void OnFinish(EditContext editContext)
+    private User user;
+    private string formSize = AntSizeLDSType.Small;
+    private bool isUpdated = false;
+
+    protected async override Task OnInitializedAsync()
     {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+        Int32.TryParse(ID, out int id);
+        user = await UserService.GetUserById(id);
+    }
+
+    private async Task OnFinish(EditContext editContext)
+    {
+        await UserService.UpdateUser(user);
+        isUpdated = true;
+        StateHasChanged();
     }
 
     private void OnFinishFailed(EditContext editContext)
