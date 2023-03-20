@@ -250,10 +250,12 @@
         {
             newBadge.Prerequisites.Badges = badgeSelections?.ToList() ?? new List<Data.Badge>();
             newBadge.Prerequisites.Activities = activitySelections?.ToList() ?? new List<Activity>();
+            newBadge.Description = newBadge.Description ?? "";
             await EarnablesService.CreateNewBadge(newBadge);
         }
         else
         {
+            newActivity.Description = newBadge.Description ?? "";
             await EarnablesService.CreateNewActivity(newActivity);
         }
         isCreated = true;

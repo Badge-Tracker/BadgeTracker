@@ -6,66 +6,45 @@
 @inject NavigationManager NavigationManager;
 @inject ModalService _modalService;
 
-<!--  **** MODAL CODE BELOW -> BUT DIDNT WORK ****
-    This is the modal stuff... but it wasn't working ... so not sure what to do. It worked no problem on the ant design
-    but didn't work here....
-<Button OnClick="@ShowConfirm">Confirm</Button>
-
-
-<Button OnClick="@ShowConfirmNotClose">Confirm</Button>
-    -->
-
-<!-- **** POP CONFIRM CODE BELOW ****
- this is the ONLY code that came with the popconfirms....
-<Popconfirm Title="Are you sure?" Icon="close-circle">
-    <a>Delete</a>
-</Popconfirm>
-<br />
-<Popconfirm Title="Are you sure?">
-    <IconTemplate>
-        <Icon Type="question-circle" Style="color: red" />
-    </IconTemplate>
-    <ChildContent>
-        <a>Delete</a>
-    </ChildContent>
-</Popconfirm>
-    -->
-
-
 <div class="container p-2 ">
     <div class="row">
         <div class="col">
             <h3>Badge and Activity Management</h3>
         </div>
+        <div class="col d-flex justify-content-end">
+            <div class="align-self-end" style="width:200px;">
+                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col">
                 <Select @bind-value="@isFilterByBadge"
                         DefaultValue="false"
                         TItem="string"
                         TItemValue="bool">
-                        <SelectOptions>
-			                <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
-			                <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
-		                </SelectOptions>
+                    <SelectOptions>
+			            <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+			            <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+		            </SelectOptions>
                 </Select>
         </div>
-        <div class="col d-flex justify-content-center">
+        <div class="col d-flex justify-content-end">
             <button onclick="@CreateBadge" class="btn btn-primary">
                 Create Badge or Activity
             </button>
         </div>
-    </div>
+    </div>  
 </div>
 
 @if (isFilterByBadge)
 {
-    <Table DataSource="badges" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+    <Table DataSource="filteredBadges" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
         <ChildContent Context="data">
             <PropertyColumn Property="b=>b.Name"></PropertyColumn>
-
-
             <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
-
-
             <Column TData="string" Title="Badge Prerequisites">
                 <Dropdown @ref="@_dropdown">
                     <Overlay>
@@ -89,81 +68,31 @@
                     </ChildContent>
                 </Dropdown>
             </Column>
-
-
-
             <ActionColumn Title="Action" class="text-center" Width="10%">
                 <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
-                <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
                 <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete badge?" Icon="close-circle">
                     <a class="text-danger"><i class="material-icons">delete</i></a>
                 </Popconfirm>
-
-
-                @*
-                    @if (!editCache[data.Id].edit)
-                    {
-                        <a @onclick="() => startEdit(data.Id)">Edit</a>
-                    }
-                    else
-                    {
-
-                        <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                        <Popconfirm Title="Sure to cancel?"
-                                    OnConfirm="() => cancelEdit(data.Id)"
-                                    OkText="Yes"
-                                    CancelText="No">
-                            <a>Cancel</a>
-                        </Popconfirm>
-                    }
-                *@
             </ActionColumn>
         </ChildContent>
     </Table>
 }
 else
 {
-    <Table DataSource="activities" TItem="Activity" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+    <Table DataSource="filteredActivities" TItem="Activity" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
         <ChildContent Context="data">
             <PropertyColumn Property="a=>a.Name"></PropertyColumn>
-
-
             <PropertyColumn Title="Description" Property="a=>a.Description"></PropertyColumn>
-
             <ActionColumn Title="Action" class="text-center" Width="10%">
                 <a href="EditActivity/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
                 <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
                 <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete activity?" Icon="close-circle">
                     <a class="text-danger"><i class="material-icons">delete</i></a>
                 </Popconfirm>
-
-
-                @*
-                    @if (!editCache[data.Id].edit)
-                    {
-                        <a @onclick="() => startEdit(data.Id)">Edit</a>
-                    }
-                    else
-                    {
-
-                        <a @onclick="() => saveEdit(data.Id)" class="save">Save</a>
-                        <Popconfirm Title="Sure to cancel?"
-                                    OnConfirm="() => cancelEdit(data.Id)"
-                                    OkText="Yes"
-                                    CancelText="No">
-                            <a>Cancel</a>
-                        </Popconfirm>
-                    }
-                *@
             </ActionColumn>
         </ChildContent>
     </Table>
 }
-
-
-
-
-
 
 <style>
     .save {
@@ -179,20 +108,9 @@ else
     private int prereqCounter = 0;
 
 
-    string txtValue { get; set; }
-    List<Data.Badge> filteredData => listOfData.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.Contains(txtValue)).ToList();
-
-    //record ItemData
-    //{
-    //    public string Id { get; set; }
-    //    public string Name { get; set; }
-    //    public int Age { get; set; }
-    //    public string Address { get; set; }
-    //};
-
-    //IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
-    //List<ItemData> listOfData = new();
-
+    private string txtValue { get; set; }
+    private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.Contains(txtValue)).ToList();
+    private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.Contains(txtValue)).ToList();
 
     int i = 0;
     string editId;
