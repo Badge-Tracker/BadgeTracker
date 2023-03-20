@@ -37,15 +37,24 @@
         <div class="col">
             <h3>Badge and Activity Management</h3>
         </div>
-        <div class="col d-flex justify-content-center">
-            <button onclick="@CreateBadge" class="btn btn-primary">
-                Create Badge or Activity
-            </button>
+        <div class="col d-flex justify-content-end">
+            <div class="align-self-end" style="width:200px;">
+                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" />
+                <br />
+                <br />
+            </div>
         </div>
-    </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-end">
+                <button onclick="@CreateBadge" class="btn btn-primary">
+                    Create Badge or Activity
+                </button>
+            </div>
+    </div>  
 </div>
 
-<Table DataSource="listOfData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+<Table DataSource="@filteredData" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
         <PropertyColumn Property="b=>b.Name"></PropertyColumn>
 
@@ -113,6 +122,10 @@
 </style>
 
 @code{
+
+    string txtValue { get; set; }
+    List<Data.Badge> filteredData => listOfData.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.Contains(txtValue)).ToList();
+
     //record ItemData
     //{
     //    public string Id { get; set; }
