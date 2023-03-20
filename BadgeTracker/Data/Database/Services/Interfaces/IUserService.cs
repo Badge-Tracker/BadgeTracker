@@ -9,5 +9,6 @@
         Task AddBadgeToUser(User user, Badge badge);
         Task AddActivityToUser(User user, Activity activity);
         Task UpdateUser(User user);
+        Task AddUser(User user);
     }
 }

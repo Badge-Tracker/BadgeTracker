@@ -120,5 +120,20 @@ namespace BadgeTracker.Data
                 // Logs errors later.
             }
         }
+
+        public async Task AddUser(User user)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.Users.Add(user);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
     }
 }

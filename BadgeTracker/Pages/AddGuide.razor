@@ -1,72 +1,81 @@
 ﻿@page "/AddGuide"
+
+@inject IUserService UserService;
+
 <h3>AddGuide</h3>
 
 @using System.Text.Json;
 
-<div class="container-fluid">
-    <Form Model="@model"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
-        <div class="d-flex justify-content-center">
-            <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@context.Size">
-                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                        </RadioGroup>
-                        </FormItem>
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-md-6 offset-md-3">
-                            <FormItem Label="Name">
-                            <Input @bind-Value="@context.InputName" />
-                            </FormItem>
-
-                            <FormItem Label="Email">
-                            <Input @bind-Value="@context.InputEmail" />
-                            </FormItem>
-
-                            @*
-                <FormItem Label="Birthday">
-                <DatePicker @bind-Value="@context.DatePicker" />
-                </FormItem>
-
-                <FormItem Label="Group">
-                <Select Mode="default"
-                DataSource="@_persons"
-                @bind-Value="@context.Name"
-                LabelName="@nameof(Person.Name)"
-                ValueName="@nameof(Person.Name)">
-                </Select>
-                </FormItem>
-
-                <FormItem Label="Age">
-                <AntDesign.InputNumber @bind-Value="@context.Number" />
-                </FormItem>
-
-                <FormItem Label="InputArea">
-                <TextArea placeholder="Input any other important information here" />
-                </FormItem>
-                *@
-
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                            <button HtmlType="submit" class="btn btn-primary">
-                                Submit
-                            </button>
+@if (isCreated)
+{
+    <h3>Created</h3>
+}
+{
+    <div class="container-fluid">
+        <Form Model="@user"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@formSize">
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                            </RadioGroup>
                             </FormItem>
                         </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 offset-md-3">
+                                <FormItem Label="Name">
+                                <Input @bind-Value="@context.Name" />
+                                </FormItem>
+
+                                <FormItem Label="Email">
+                                <Input @bind-Value="@context.Email" />
+                                </FormItem>
+
+                                @*
+                    <FormItem Label="Birthday">
+                    <DatePicker @bind-Value="@context.DatePicker" />
+                    </FormItem>
+
+                    <FormItem Label="Group">
+                    <Select Mode="default"
+                    DataSource="@_persons"
+                    @bind-Value="@context.Name"
+                    LabelName="@nameof(Person.Name)"
+                    ValueName="@nameof(Person.Name)">
+                    </Select>
+                    </FormItem>
+
+                    <FormItem Label="Age">
+                    <AntDesign.InputNumber @bind-Value="@context.Number" />
+                    </FormItem>
+
+                    <FormItem Label="InputArea">
+                    <TextArea placeholder="Input any other important information here" />
+                    </FormItem>
+                    *@
+
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                                <button HtmlType="submit" class="btn btn-primary">
+                                    Submit
+                                </button>
+                                </FormItem>
+                            </div>
+                        </div>
+
+
+                        </Form>
+
+
                     </div>
-
-
-                    </Form>
-
-
-                </div>
+}
 
 
 
@@ -88,6 +97,17 @@
     private Model model = new Model();
 
 
+    private User user = new();
+    private string formSize = AntSizeLDSType.Small;
+    private bool isCreated = false;
+
+    private async Task OnFinish(EditContext editContext)
+    {
+        await UserService.AddUser(user);
+        isCreated = true;
+        StateHasChanged();
+    }
+
     record Person(string Name);
     private List<Person> _persons = new List<Person>
         {
@@ -97,10 +117,6 @@
             new Person("Emily"),
         };
 
-    private void OnFinish(EditContext editContext)
-    {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
-    }
 
     private void OnFinishFailed(EditContext editContext)
     {
