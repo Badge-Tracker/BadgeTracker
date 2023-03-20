@@ -1,37 +1,41 @@
 ﻿@page "/AddBadge/{Id}"
 
 @using System.Text.Json;
-<!--for delete page you can either add another var thats passed and make it either (edit, delete) and have this page change functionality
-    or you could just make a different page LOL
--->
 
-<h3>AddBadge</h3>
 
-<h4>@ID</h4>
+<div class="row">
+    <div class="col">
+    </div>
+    <div class="col">
+        <h3>Add Badge or Activity</h3>
+        <Form Model="@model"
 
-<Form Model="@model"
-
-      OnFinish="OnFinish"
-      OnFinishFailed="OnFinishFailed"
-      Size="@model.Size">
-<FormItem Label="Select">
-    <Select Mode="default"
-            DataSource="@_persons"
-            @bind-Value="@context.Name"
-            LabelName="@nameof(Person.Name)"
-            ValueName="@nameof(Person.Name)">
-    </Select>
-</FormItem>
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@model.Size">
+        <FormItem Label="Select">
+            <Select Mode="default"
+                    DataSource="@_persons"
+                    @bind-Value="@context.Name"
+                    LabelName="@nameof(Person.Name)"
+                    ValueName="@nameof(Person.Name)">
+            </Select>
+        </FormItem>
 
     
-    <div class="d-flex justify-content-center">
-        <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <button HtmlType="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </FormItem>
+            <div class="d-flex justify-content-center">
+                <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                    <button HtmlType="submit" class="btn btn-primary">
+                        Add Badge
+                    </button>
+                </Popconfirm>
+            </div>
+        </Form>
     </div>
-</Form>
+    <div class="col">
+    </div>
+
+</div>
 @code {
     [Parameter]
     public string ID { get; set; }
