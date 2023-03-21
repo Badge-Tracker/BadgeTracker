@@ -92,6 +92,7 @@ namespace BadgeTracker.Data
             CompletedActivity completedActivity = new()
             {
                 ActivityId = activity.Id,
+                UserId = user.UserId,
                 CompletedBy = 0
             };
 
