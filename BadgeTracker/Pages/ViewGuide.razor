@@ -1,31 +1,38 @@
 ﻿@page "/ViewGuide/{Id}"
 
+
 @inject IUserService UserService;
 @inject IEarnablesService EarnablesService;
 
-<h3>ViewGuide</h3>
-<h4>@ID</h4>
+
 
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col">
-            <h4>Name: </h4>
-            <p>@user.Name</p>
+
+        <div class="col-2">
+        </div>
+        <div class="col-4">
+            <h4 class="text-center">Name: </h4>
+            <p class="text-center">@user.Name</p>
             <br>
-            <h4>Email: </h4>
-            <p>@user.Email</p>
+            <h4 class="text-center">Email: </h4>
+            <p class="text-center">@user.Email</p>
+
 
             <br>
             <br>
             <div class="d-flex justify-content-center">
                 <Popconfirm Title="Are you sure you want to delete this person?" Icon="close-circle">
-                    <a class="text-danger"><i class="material-icons">delete</i></a>
-                </Popconfirm>
+                    <button HtmlType="submit" class="btn btn-danger">
+                        Delete Guide
+                    </button>
+                </Popconfirm> 
             </div>
+            
         </div>
-        <div class="col">
-            <h3>Badges Obtained</h3>
+        <div class="col-4">
+             <h3>Badges Obtained</h3>
             @foreach (EarnedBadge badge in earnedBadges)
             {
                 <p>@badge.Badge.Name</p>
@@ -43,6 +50,11 @@
                   KeyExpression="x => x.DataItem.Id"
                   TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
             </Tree>*@
+        </div>
+    
+
+        <div class="col-2">
+
         </div>
     </div>
    

@@ -27,35 +27,35 @@
             <a href="ViewGuide/@data.UserId">@data.Name</a>
         </Column>
 
-        <Column TData="string" Title="Badge Prerequisites">
-                <Dropdown @ref="@_dropdown">
-                    <Overlay>
-                        <Menu AutoCloseDropdown="@false">
-                            @foreach (EarnedBadge badge in earnedBadges[data.UserId])
-                            {
-                                prereqCounter++;
-                                <MenuItem Id="@prereqCounter.ToString()">@badge.Badge.Name</MenuItem>
-                            }
-                            @foreach (CompletedActivity activity in completedActivities[data.UserId])
-                            {
-                                prereqCounter++;
-                                <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Id</MenuItem>
-                            }
-                        </Menu>
-                    </Overlay>
-                    <ChildContent>
-                        <a class="ant-dropdown-link" @onclick:preventDefault>
-                            Hover to see prerequisites <Icon Type="down" />
-                        </a>
-                    </ChildContent>
-                </Dropdown>
-            </Column>
+        <Column TData="string" Title="Earned Badges">
+            <Dropdown @ref="@_dropdown">
+                <Overlay>
+                    <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
+                        @foreach (EarnedBadge badge in earnedBadges[data.UserId])
+                        {
+                            prereqCounter++;
+                            <MenuItem Id="@prereqCounter.ToString()">@badge.Badge.Name</MenuItem>
+                        }
+                        @foreach (CompletedActivity activity in completedActivities[data.UserId])
+                        {
+                            prereqCounter++;
+                            <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Id</MenuItem>
+                        }
+                    </Menu>
+                </Overlay>
+                <ChildContent>
+                    <a class="ant-dropdown-link" @onclick:preventDefault>
+                        Hover to see badges <Icon Type="down" />
+                    </a>
+                </ChildContent>
+            </Dropdown>
+        </Column>
         <ActionColumn Title="Edit Person" Width="10%">
             <a href="EditGuide/@data.UserId" class="centered-icon"><i class="material-icons">edit</i></a>
         </ActionColumn>
         <ActionColumn Title="Badges" class="text-center" Width="10%">
             <a href="AddBadge/@data.UserId"><i class="material-icons">add_box</i></a>
-            <a href="DeleteBadge/@data.UserId"><i class="material-icons">delete</i></a>
+            <a href="DeleteBadge/@data.UserId"><a class="text-danger"><i class="material-icons">delete</i></a></a>
         </ActionColumn>
     </ChildContent>
 </Table>

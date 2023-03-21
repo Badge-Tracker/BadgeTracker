@@ -2,15 +2,13 @@
 
 @using System.Text.Json;
 
+
 @inject IUserService UserService;
 @inject IEarnablesService EarnablesService;
-<!--for delete page you can either add another var thats passed and make it either (edit, delete) and have this page change functionality
-    or you could just make a different page LOL
--->
 
-<h3>AddBadge</h3>
 
-<h4>@ID</h4>
+
+
 
 @if(isAdded)
 {
@@ -18,36 +16,57 @@
 }
 else
 {
-    <Form Model="@model"
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class="text-center">Add Badge or Activity</h3>
+        
+            <Form Model="@model"
 
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
-    <FormItem Label="Select">
-        <Select Mode="multiple"
-            @bind-Values="@badgeSelections"
-            Placeholder="Select one or more badges"
-            TItemValue="Data.Badge"
-            TItem="Data.Badge">
-            <SelectOptions>
-			    @foreach(Data.Badge badge in badges)
-			    {
-				    <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-			    }
-		    </SelectOptions>
-    </Select>
-    </FormItem>
+                  OnFinish="OnFinish"
+                  OnFinishFailed="OnFinishFailed"
+                  Size="@model.Size">
+                  <div class="d-flex justify-content-center">
+                        <FormItem Label="Form Size">
+                            <RadioGroup @bind-Value="@context.Size">
+                                <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                            </RadioGroup>
+                        </FormItem>
+                    </div>
+            <FormItem Label="Select">
+                <Select Mode="multiple"
+                    @bind-Values="@badgeSelections"
+                    Placeholder="Select one or more badges"
+                    TItemValue="Data.Badge"
+                    TItem="Data.Badge">
+                    <SelectOptions>
+			            @foreach(Data.Badge badge in badges)
+			            {
+				            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+			            }
+		            </SelectOptions>
+            </Select>
+            </FormItem>
 
     
-        <div class="d-flex justify-content-center">
-            <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                <button HtmlType="submit" class="btn btn-primary">
-                    Submit
-                </button>
-            </FormItem>
+                <div class="d-flex justify-content-center">
+                        <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                            <button HtmlType="submit" class="btn btn-primary">
+                                Add Badge
+                            </button>
+                        </Popconfirm>
+                    </div>
+            </Form>
+            </div>
+            <div class="col">
+
+            </div>
         </div>
-    </Form>
 }
+
 @code {
     [Parameter]
     public string ID { get; set; }

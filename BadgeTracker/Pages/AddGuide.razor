@@ -1,8 +1,9 @@
 ﻿@page "/AddGuide"
 
+
 @inject IUserService UserService;
 
-<h3>AddGuide</h3>
+<h3 class ="text-center">Add a Guide</h3>
 
 @using System.Text.Json;
 
@@ -16,67 +17,49 @@ else {
               OnFinish="OnFinish"
               OnFinishFailed="OnFinishFailed"
               Size="@formSize">
-            <div class="d-flex justify-content-center">
-                <FormItem Label="Form Size">
+          <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
                     <RadioGroup @bind-Value="@formSize">
-                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                            </RadioGroup>
-                            </FormItem>
-                        </div>
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
 
-                        <div class="row">
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+                <FormItem Label="Name">
+                <Input @bind-Value="@context.Name" />
+                </FormItem>
 
-                            <div class="col-md-6 offset-md-3">
-                                <FormItem Label="Name">
-                                <Input @bind-Value="@context.Name" />
-                                </FormItem>
+                <FormItem Label="Email">
+                <Input @bind-Value="@context.Email" />
+                </FormItem>
+                <FormItem class="col-md-12 text-center">
+                    <button HtmlType="submit" class="btn btn-primary">
+                    Add Guide
+                    </button>
+                </FormItem>
 
-                                <FormItem Label="Email">
-                                <Input @bind-Value="@context.Email" />
-                                </FormItem>
+               
 
-                                @*
-                    <FormItem Label="Birthday">
-                    <DatePicker @bind-Value="@context.DatePicker" />
-                    </FormItem>
-
-                    <FormItem Label="Group">
-                    <Select Mode="default"
-                    DataSource="@_persons"
-                    @bind-Value="@context.Name"
-                    LabelName="@nameof(Person.Name)"
-                    ValueName="@nameof(Person.Name)">
-                    </Select>
-                    </FormItem>
-
-                    <FormItem Label="Age">
-                    <AntDesign.InputNumber @bind-Value="@context.Number" />
-                    </FormItem>
-
-                    <FormItem Label="InputArea">
-                    <TextArea placeholder="Input any other important information here" />
-                    </FormItem>
-                    *@
-
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                                <button HtmlType="submit" class="btn btn-primary">
-                                    Submit
-                                </button>
-                                </FormItem>
-                            </div>
-                        </div>
+            </div>
+            <div class="col">
+            </div>
+                            
+        </div>
 
 
-                        </Form>
+        </Form>
 
 
-                    </div>
+    </div>
+                    
+
 }
-
 
 
                 @code
