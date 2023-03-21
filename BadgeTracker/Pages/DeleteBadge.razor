@@ -6,64 +6,62 @@
 @using System.Text.Json;
 @using System.Linq;
 
-<div class="row">
-    <div class="col">
-    </div>
-    <div class="col">
-        <h3 class ="text-center">Delete Badge or Activity</h3>
-        <Form Model="@model"
+@if (isUpdated)
+{
+    <h3>Updated!</h3>
+}
+else {
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class ="text-center">Delete Badge or Activity</h3>
+            <Form Model="@model"
               OnFinish="OnFinish"
               OnFinishFailed="OnFinishFailed"
               Size="@model.Size">
 
-            <FormItem Label="Badges">
-                <!--<Select Mode="multiple"
+                <FormItem Label="Prerequisite Badges">
+                    <Select Mode="multiple"
+                        DataSource="@badges"
                         @bind-Values="@badgeSelections"
-                        Placeholder="Select one or more badges"
+                        Placeholder="Select one or more badge prerequisites"
                         TItemValue="Data.Badge"
-                        TItem="Data.Badge">
-                    <SelectOptions>
-                        @foreach (Data.Badge badge in badges)
-                        {
-                            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-                        }
-                    </SelectOptions>
-                </Select>-->
-            </FormItem>
+                        TItem="Data.Badge"
+                        LabelName="@nameof(Data.Badge.Name)">
+                    </Select>
+                </FormItem>
 
-            <FormItem Label="Activities">
-                <!--<Select Mode="multiple"
-                @bind-Values="@activitySelections"
-                        Placeholder="Select one or more activities"
-                        TItemValue="Data.Activity"
-                        TItem="Data.Activity">
-                    <SelectOptions>
-                @foreach (Data.Activity activity in activities)
-                {
-                            <SelectOption TItemValue="Data.Activity" TItem="Data.Activity" Value=@activity Label=@activity.Name />
-                }
-                    </SelectOptions>
-                </Select>-->
-            </FormItem>
+                <FormItem Label="Prerequisite Activities">
+                    <Select Mode="multiple"
+                        DataSource="@activities"
+                        @bind-Values="@activitySelections"
+                        Placeholder="Select one or more activity prerequisites"
+                        TItemValue="Activity"
+                        TItem="Activity"
+                        LabelName="@nameof(Activity.Name)">
+                    </Select>
+                </FormItem>
 
 
-            <div class="d-flex justify-content-center">
-                <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
-                    <button HtmlType="submit" class="btn btn-danger">
-                        Delete Badge
-                    </button>
-                </Popconfirm>
-               
-            </div>
-        </Form>
+                <div class="d-flex justify-content-center">
+                    <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                        <button HtmlType="submit" class="btn btn-danger">
+                            Delete Badge
+                        </button>
+                    </Popconfirm>
+
+                </div>
+            </Form>
+        </div>
+        <div class="col">
+        </div>
     </div>
-    <div class="col">
-    </div>
-
-</div>
+}
 @code {
     [Parameter]
     public string ID { get; set; }
+    public int parsedId;
     public class Model
     {
         public string Size { get; set; } = AntSizeLDSType.Small;
@@ -77,34 +75,26 @@
     private List<CompletedActivity> completedActivities = new();
     private List<Data.Badge> badges = new();
     private List<Data.Activity> activities = new();
-    
-
-
     private IEnumerable<Data.Badge> badgeSelections;
     private IEnumerable<Data.Activity> activitySelections;
-
+    private bool isUpdated = false;
 
     protected async override Task OnInitializedAsync()
     {
-        Int32.TryParse(ID, out int id);
-        user = await UserService.GetUserById(id);
-
+        Int32.TryParse(ID, out parsedId);
+        user = await UserService.GetUserById(parsedId);
 
         earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
         completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
 
         foreach (EarnedBadge badge in earnedBadges)
         {
-            //badges.Add(EarnablesService.GetBadgeById(badge.BadgeId);
-            
-            
+            badges.Add(await EarnablesService.GetBadgeById(badge.BadgeId));
         }
         foreach (CompletedActivity activity in completedActivities)
         {
-            //activities.Add(EarnablesService.GetActivityById(activity.ActivityId);
+            activities.Add(await EarnablesService.GetActivityById(activity.ActivityId));
         }
-
-
     }
 
     record Person(string Name);
@@ -116,9 +106,28 @@
             new Person("Emily"),
         };
 
-    private void OnFinish(EditContext editContext)
+    private async Task OnFinish(EditContext editContext)
     {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+        if (badgeSelections != null)
+        {
+            foreach (Data.Badge badge in badgeSelections)
+            {
+                List<EarnedBadge> earnedBadges = await EarnablesService.GetEarnedBadgesByBadgeId(badge.Id);
+                EarnedBadge badgeToRemove = earnedBadges.Where(b => b.UserId == parsedId).FirstOrDefault();
+                await UserService.RemoveBadgeFromUser(user, badgeToRemove);
+            }
+        }
+
+        if (activitySelections != null)
+        {
+            foreach (Activity activity in activitySelections)
+            {
+                List<CompletedActivity> completedActivities = await EarnablesService.GetCompletedActivitiesByActivityId(activity.Id);
+                CompletedActivity activityToRemove = completedActivities.Where(b => b.UserId == parsedId).FirstOrDefault();
+                await UserService.RemoveActivityFromUser(user, activityToRemove);
+            }
+        }
+        isUpdated = true;
     }
 
     private void OnFinishFailed(EditContext editContext)

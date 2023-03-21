@@ -136,5 +136,34 @@ namespace BadgeTracker.Data
                 // Logs errors later.
             }
         }
+
+        public async Task RemoveBadgeFromUser(User user, EarnedBadge badge)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.EarnedBadges.Remove(badge);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
+        public async Task RemoveActivityFromUser(User user, CompletedActivity activity)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.CompletedActivities.Remove(activity);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
     }
 }
