@@ -92,6 +92,7 @@ namespace BadgeTracker.Data
             CompletedActivity completedActivity = new()
             {
                 ActivityId = activity.Id,
+                UserId = user.UserId,
                 CompletedBy = 0
             };
 
@@ -128,6 +129,35 @@ namespace BadgeTracker.Data
             try
             {
                 dbContext.Users.Add(user);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
+
+        public async Task RemoveBadgeFromUser(User user, EarnedBadge badge)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.EarnedBadges.Remove(badge);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                // Logs errors later.
+            }
+        }
+        public async Task RemoveActivityFromUser(User user, CompletedActivity activity)
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+
+            try
+            {
+                dbContext.CompletedActivities.Remove(activity);
                 await dbContext.SaveChangesAsync();
             }
             catch (Exception e)

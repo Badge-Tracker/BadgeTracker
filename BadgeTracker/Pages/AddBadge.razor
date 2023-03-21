@@ -36,7 +36,7 @@ else
                             </RadioGroup>
                         </FormItem>
                     </div>
-            <FormItem Label="Select">
+            <FormItem Label="Badges">
                 <Select Mode="multiple"
                     @bind-Values="@badgeSelections"
                     Placeholder="Select one or more badges"
@@ -48,16 +48,30 @@ else
 				            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
 			            }
 		            </SelectOptions>
-            </Select>
+                </Select>
+            </FormItem>
+            <FormItem Label="Activities">
+                <Select Mode="multiple"
+                    @bind-Values="@activitySelections"
+                    Placeholder="Select one or more activies"
+                    TItemValue="Data.Activity"
+                    TItem="Data.Activity">
+                    <SelectOptions>
+                        @foreach (Data.Activity activity in activities)
+                        {
+                                <SelectOption TItemValue="Data.Activity" TItem="Data.Activity" Value=@activity Label=@activity.Name />
+                        }
+                    </SelectOptions>
+                </Select>
             </FormItem>
 
     
                 <div class="d-flex justify-content-center">
-                        <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                        
                             <button HtmlType="submit" class="btn btn-primary">
-                                Add Badge
+                                Add
                             </button>
-                        </Popconfirm>
+                        
                     </div>
             </Form>
             </div>
@@ -90,8 +104,10 @@ else
     private List<EarnedBadge> earnedBadges = new();
     private List<CompletedActivity> completedActivities = new();
     private List<Data.Badge> badges = new();
+    private List<Data.Activity> activities = new();
     private User user;
     private IEnumerable<Data.Badge> badgeSelections;
+    private IEnumerable<Data.Activity> activitySelections;
     private bool isAdded = false;
 
     protected async override Task OnInitializedAsync()
@@ -109,20 +125,35 @@ else
         completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(id) ?? new();
 
         badges = await EarnablesService.GetAllBadges();
+        activities = await EarnablesService.GetAllActivities();
 
         foreach (EarnedBadge badge in earnedBadges)
         {
             badges.RemoveAll(b => b.Id == badge.BadgeId);
         }
+        foreach (CompletedActivity activity in completedActivities)
+        {
+            activities.RemoveAll(b => b.Id == activity.ActivityId);
+        }
     }
 
     private async Task OnFinish(EditContext editContext)
     {
-        if (badgeSelections == null) return;
+        if (badgeSelections == null && activitySelections == null) return;
 
-        foreach (Data.Badge badge in badgeSelections)
+        if (badgeSelections != null)
         {
-            await UserService.AddBadgeToUser(user, badge);
+            foreach (Data.Badge badge in badgeSelections)
+            {
+                await UserService.AddBadgeToUser(user, badge);
+            }
+        }
+        if (activitySelections != null)
+        {
+            foreach (Data.Activity activity in activitySelections)
+            {
+                await UserService.AddActivityToUser(user, activity);
+            }
         }
         isAdded = true;
         StateHasChanged();

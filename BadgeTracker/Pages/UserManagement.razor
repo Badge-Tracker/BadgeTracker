@@ -44,7 +44,7 @@
                         @foreach (CompletedActivity activity in completedActivities[data.UserId])
                         {
                             prereqCounter++;
-                            <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Id</MenuItem>
+                            <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Name</MenuItem>
                         }
                     </Menu>
                 </Overlay>

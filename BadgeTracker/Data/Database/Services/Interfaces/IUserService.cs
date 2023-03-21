@@ -8,6 +8,8 @@
         Task<List<User>> GetAllUsers();
         Task AddBadgeToUser(User user, Badge badge);
         Task AddActivityToUser(User user, Activity activity);
+        Task RemoveBadgeFromUser(User user, EarnedBadge badge);
+        Task RemoveActivityFromUser(User user, CompletedActivity activity);
         Task UpdateUser(User user);
         Task AddUser(User user);
     }
