@@ -15,13 +15,35 @@
               OnFinish="OnFinish"
               OnFinishFailed="OnFinishFailed"
               Size="@model.Size">
-            <FormItem Label="Select">
-                <Select Mode="default"
-                        DataSource="@allEarned"
-                        @bind-Value="@context.Name"
-                        LabelName="@nameof(Earnable.Name)"
-                        ValueName="@nameof(Earnable.Name)">
-                </Select>
+
+            <FormItem Label="Badges">
+                <!--<Select Mode="multiple"
+                        @bind-Values="@badgeSelections"
+                        Placeholder="Select one or more badges"
+                        TItemValue="Data.Badge"
+                        TItem="Data.Badge">
+                    <SelectOptions>
+                        @foreach (Data.Badge badge in badges)
+                        {
+                            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+                        }
+                    </SelectOptions>
+                </Select>-->
+            </FormItem>
+
+            <FormItem Label="Activities">
+                <!--<Select Mode="multiple"
+                @bind-Values="@activitySelections"
+                        Placeholder="Select one or more activities"
+                        TItemValue="Data.Activity"
+                        TItem="Data.Activity">
+                    <SelectOptions>
+                @foreach (Data.Activity activity in activities)
+                {
+                            <SelectOption TItemValue="Data.Activity" TItem="Data.Activity" Value=@activity Label=@activity.Name />
+                }
+                    </SelectOptions>
+                </Select>-->
             </FormItem>
 
 
@@ -53,18 +75,36 @@
     private User user;
     private List<EarnedBadge> earnedBadges = new();
     private List<CompletedActivity> completedActivities = new();
-    private List<Earnable> allEarned = new();
+    private List<Data.Badge> badges = new();
+    private List<Data.Activity> activities = new();
+    
+
+
+    private IEnumerable<Data.Badge> badgeSelections;
+    private IEnumerable<Data.Activity> activitySelections;
+
 
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(ID, out int id);
         user = await UserService.GetUserById(id);
 
+
         earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
         completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
 
-        allEarned.AddRange(earnedBadges.OfType<Earnable>());
-        allEarned.AddRange(completedActivities.OfType<Earnable>());
+        foreach (EarnedBadge badge in earnedBadges)
+        {
+            //badges.Add(EarnablesService.GetBadgeById(badge.BadgeId);
+            
+            
+        }
+        foreach (CompletedActivity activity in completedActivities)
+        {
+            //activities.Add(EarnablesService.GetActivityById(activity.ActivityId);
+        }
+
+
     }
 
     record Person(string Name);
