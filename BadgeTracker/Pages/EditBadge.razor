@@ -44,16 +44,13 @@
                 <div class="item">
                     <FormItem Label="Prerequisite Badges">
                         <Select Mode="multiple"
-                                @bind-Values="@badgeSelections"
+                                DataSource="@badges"
+                                @bind-Values="@badgeSelectionsEnumerable"
                                 Placeholder="Select one or more badge prerequisites"
                                 TItemValue="Data.Badge"
-                                TItem="Data.Badge">
-                                <SelectOptions>
-			                        @foreach(Data.Badge badge in badges)
-			                        {
-				                        <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-			                        }
-		                        </SelectOptions>
+                                TItem="Data.Badge"
+                                DefaultValues="@badgeSelectionsEnumerable"
+                                LabelName="@nameof(Data.Badge.Name)">
                         </Select>
                     </FormItem>
                 </div>
@@ -62,16 +59,13 @@
                 <div class="item">
                     <FormItem Label="Prerequisite Activities">
                         <Select Mode="multiple"
-                                @bind-Values="@activitySelections"
+                                DataSource="@activities"
+                                @bind-Values="@activitySelectionsEnumerable"
                                 Placeholder="Select one or more activity prerequisites"
                                 TItemValue="Activity"
-                                TItem="Activity">
-                                <SelectOptions>
-			                        @foreach(Activity activity in activities)
-			                        {
-				                        <SelectOption TItemValue="Activity" TItem="Activity" Value=@activity Label=@activity.Name />
-			                        }
-		                        </SelectOptions>
+                                TItem="Activity"
+                                DefaultValues="@activitySelectionsEnumerable"
+                                LabelName="@nameof(Activity.Name)">
                         </Select>
                     </FormItem>
                 </div>
@@ -159,8 +153,10 @@
     private bool isUpdated = false;
     private List<Data.Badge> badges;
     private List<Activity> activities;
-    private IEnumerable<Data.Badge> badgeSelections;
-    private IEnumerable<Activity> activitySelections;
+    private List<Data.Badge> badgeSelections = new();
+    private IEnumerable<Data.Badge> badgeSelectionsEnumerable;
+    private List<Activity> activitySelections = new();
+    private IEnumerable<Activity> activitySelectionsEnumerable;
 
 
     protected async override Task OnInitializedAsync()
@@ -169,18 +165,29 @@
         newBadge = await EarnablesService.GetBadgeById(id);
 
         badges = await EarnablesService.GetAllBadges();
-        badges.Remove(newBadge);
-        badgeSelections = newBadge.Prerequisites.Badges;
-        activitySelections = newBadge.Prerequisites.Activities;
+        badges = badges.Where(b => b.Id != newBadge.Id).ToList();
 
         activities = await EarnablesService.GetAllActivities();
-        StateHasChanged();
+
+        // Due to an obscure issue with how AntDesign is comparing the badges, this has to be used
+        // to populate the prerequisties.
+        foreach(Data.Badge badge in newBadge.Prerequisites.Badges)
+        {
+            badgeSelections.Add(badges.FirstOrDefault(b => b.Id == badge.Id));
+        }
+        badgeSelectionsEnumerable = badgeSelections;
+
+        foreach (Activity activity in newBadge.Prerequisites.Activities)
+        {
+            activitySelections.Add(activities.FirstOrDefault(a => a.Id == activity.Id));
+        }
+        activitySelectionsEnumerable = activitySelections;
     }
 
     private async void OnFinish(EditContext editContext)
     {
-        newBadge.Prerequisites.Badges = badgeSelections?.ToList() ?? new List<Data.Badge>();
-        newBadge.Prerequisites.Activities = activitySelections?.ToList() ?? new List<Activity>();
+        newBadge.Prerequisites.Badges = badgeSelectionsEnumerable?.ToList() ?? new List<Data.Badge>();
+        newBadge.Prerequisites.Activities = activitySelectionsEnumerable?.ToList() ?? new List<Activity>();
         await EarnablesService.UpdateBadge(newBadge);
         isUpdated = true;
     }
