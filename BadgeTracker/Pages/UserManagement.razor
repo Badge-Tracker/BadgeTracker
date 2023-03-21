@@ -12,16 +12,21 @@
 
 <a href="AddGuide">
     <i class="material-icons">
-        
         person_add
-        
     </i>
-
     Add a New Girl Guide
 </a>
 
+<div class="col d-flex justify-content-end">
+    <div class="align-self-end" style="width:200px;">
+        <Input Placeholder="Search for User" @bind-Value="@txtValue" BindOnInput />
+        <br />
+        <br />
+    </div>
+</div>
 
-<Table DataSource="@users" TItem="User" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+
+<Table DataSource="@filteredUsers" TItem="User" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
     <ChildContent Context="data">
         <Column TData="string" Title="Name">
             <a href="ViewGuide/@data.UserId">@data.Name</a>
@@ -93,7 +98,9 @@
     int i = 0;
     string editId;
 
+    private string txtValue = "";
     private List<User> users;
+    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList();
     private Dictionary<int, List<EarnedBadge>> earnedBadges = new();
     private Dictionary<int, List<CompletedActivity>> completedActivities = new();
     private int prereqCounter = 0;

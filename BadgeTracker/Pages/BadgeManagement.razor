@@ -13,7 +13,7 @@
         </div>
         <div class="col d-flex justify-content-end">
             <div class="align-self-end" style="width:200px;">
-                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" />
+                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" BindOnInput />
                 <br />
                 <br />
             </div>
@@ -109,8 +109,8 @@ else
 
 
     private string txtValue { get; set; }
-    private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.Contains(txtValue)).ToList();
-    private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.Contains(txtValue)).ToList();
+    private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.ToLower().Contains(txtValue)).ToList();
+    private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.ToLower().Contains(txtValue)).ToList();
 
     int i = 0;
     string editId;
