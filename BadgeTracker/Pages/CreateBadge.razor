@@ -89,14 +89,16 @@
                     </FormItem>
                 </div>
             </div>
+            </div>
+            <div class="row">
             <div class="col">
                 <div class="item">
                     <FormItem Label="Description">
-                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
+                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" style="width:350px;" />
                     </FormItem>
                 </div>
             </div>
-        </div>
+            </div>
 
         <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
             <button HtmlType="submit" class="btn btn-primary">
@@ -113,7 +115,7 @@
 
     </Form>
     }
-    else
+    else 
     {
         <Form Model="@newActivity"
           OnFinish="OnFinish"
