@@ -1,6 +1,10 @@
 ﻿@page "/DeleteBadge/{Id}"
 
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
+
 @using System.Text.Json;
+@using System.Linq;
 
 <div class="row">
     <div class="col">
@@ -13,10 +17,10 @@
               Size="@model.Size">
             <FormItem Label="Select">
                 <Select Mode="default"
-                        DataSource="@_persons"
+                        DataSource="@allEarned"
                         @bind-Value="@context.Name"
-                        LabelName="@nameof(Person.Name)"
-                        ValueName="@nameof(Person.Name)">
+                        LabelName="@nameof(Earnable.Name)"
+                        ValueName="@nameof(Earnable.Name)">
                 </Select>
             </FormItem>
 
@@ -45,6 +49,24 @@
     }
     public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
     private Model model = new Model();
+
+    private User user;
+    private List<EarnedBadge> earnedBadges = new();
+    private List<CompletedActivity> completedActivities = new();
+    private List<Earnable> allEarned = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(ID, out int id);
+        user = await UserService.GetUserById(id);
+
+        earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
+        completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
+
+        allEarned.AddRange(earnedBadges.OfType<Earnable>());
+        allEarned.AddRange(completedActivities.OfType<Earnable>());
+    }
+
     record Person(string Name);
     private List<Person> _persons = new List<Person>
         {
