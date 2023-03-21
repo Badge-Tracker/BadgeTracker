@@ -7,12 +7,7 @@
 @inject IEarnablesService EarnablesService;
 
 
-<div class="row">
-    <div class="col">
-    </div>
-    <div class="col">
-        <h3 class="text-center">Add Badge or Activity</h3>
-        <Form Model="@model"
+
 
 
 @if(isAdded)
@@ -21,44 +16,55 @@
 }
 else
 {
-    <Form Model="@model"
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class="text-center">Add Badge or Activity</h3>
+        
+            <Form Model="@model"
 
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@model.Size">
-          <div class="d-flex justify-content-center">
-                <FormItem Label="Form Size">
-                    <RadioGroup @bind-Value="@context.Size">
-                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                    </RadioGroup>
-                </FormItem>
-            </div>
-    <FormItem Label="Select">
-        <Select Mode="multiple"
-            @bind-Values="@badgeSelections"
-            Placeholder="Select one or more badges"
-            TItemValue="Data.Badge"
-            TItem="Data.Badge">
-            <SelectOptions>
-			    @foreach(Data.Badge badge in badges)
-			    {
-				    <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-			    }
-		    </SelectOptions>
-    </Select>
-    </FormItem>
+                  OnFinish="OnFinish"
+                  OnFinishFailed="OnFinishFailed"
+                  Size="@model.Size">
+                  <div class="d-flex justify-content-center">
+                        <FormItem Label="Form Size">
+                            <RadioGroup @bind-Value="@context.Size">
+                                <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                            </RadioGroup>
+                        </FormItem>
+                    </div>
+            <FormItem Label="Select">
+                <Select Mode="multiple"
+                    @bind-Values="@badgeSelections"
+                    Placeholder="Select one or more badges"
+                    TItemValue="Data.Badge"
+                    TItem="Data.Badge">
+                    <SelectOptions>
+			            @foreach(Data.Badge badge in badges)
+			            {
+				            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+			            }
+		            </SelectOptions>
+            </Select>
+            </FormItem>
 
     
-        <div class="d-flex justify-content-center">
-                <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
-                    <button HtmlType="submit" class="btn btn-primary">
-                        Add Badge
-                    </button>
-                </Popconfirm>
+                <div class="d-flex justify-content-center">
+                        <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                            <button HtmlType="submit" class="btn btn-primary">
+                                Add Badge
+                            </button>
+                        </Popconfirm>
+                    </div>
+            </Form>
             </div>
-    </Form>
+            <div class="col">
+
+            </div>
+        </div>
 }
 
 @code {

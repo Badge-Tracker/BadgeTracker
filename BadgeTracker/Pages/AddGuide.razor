@@ -19,7 +19,7 @@ else {
               Size="@formSize">
           <div class="d-flex justify-content-center">
             <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@context.Size">
+                    <RadioGroup @bind-Value="@formSize">
                     <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
                     <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
                     <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
@@ -27,37 +27,40 @@ else {
             </FormItem>
         </div>
 
-                        <div class="row">
-                          <div class="col">
-                          </div>
-                            <div class="col">
-                                <FormItem Label="Name">
-                                <br />
-                                <Input @bind-Value="@context.Name" />
-                                </FormItem>
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+                <FormItem Label="Name">
+                <br />
+                <Input @bind-Value="@context.Name" />
+                </FormItem>
 
-                                <FormItem Label="Email">
-                                <Input @bind-Value="@context.Email" />
-                                </FormItem>
-                                <FormItem class="col-md-12 text-center">
-                                  <button HtmlType="submit" class="btn btn-primary">
-                                    Add Guide
-                                  </button>
-                                </FormItem>
+                <FormItem Label="Email">
+                <Input @bind-Value="@context.Email" />
+                </FormItem>
+                <FormItem class="col-md-12 text-center">
+                    <button HtmlType="submit" class="btn btn-primary">
+                    Add Guide
+                    </button>
+                </FormItem>
 
                
 
-                            </div>
+            </div>
+            <div class="col">
+            </div>
                             
-                        </div>
+        </div>
 
 
-                        </Form>
+        </Form>
 
 
-                    </div>
+    </div>
+                    
 
-
+}
 
 
                 @code
