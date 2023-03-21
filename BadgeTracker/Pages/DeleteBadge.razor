@@ -21,22 +21,22 @@ else {
               OnFinishFailed="OnFinishFailed"
               Size="@model.Size">
 
-                <FormItem Label="Prerequisite Badges">
+                <FormItem Label="Badges">
                     <Select Mode="multiple"
                         DataSource="@badges"
                         @bind-Values="@badgeSelections"
-                        Placeholder="Select one or more badge prerequisites"
+                        Placeholder="Select one or more badges"
                         TItemValue="Data.Badge"
                         TItem="Data.Badge"
                         LabelName="@nameof(Data.Badge.Name)">
                     </Select>
                 </FormItem>
 
-                <FormItem Label="Prerequisite Activities">
+                <FormItem Label="Activities">
                     <Select Mode="multiple"
                         DataSource="@activities"
                         @bind-Values="@activitySelections"
-                        Placeholder="Select one or more activity prerequisites"
+                        Placeholder="Select one or more activities"
                         TItemValue="Activity"
                         TItem="Activity"
                         LabelName="@nameof(Activity.Name)">
@@ -45,9 +45,9 @@ else {
 
 
                 <div class="d-flex justify-content-center">
-                    <Popconfirm Title="Are you sure you want to delete the badge from this person?" Icon="close-circle">
+                    <Popconfirm Title="Are you sure you want to delete these?" Icon="close-circle">
                         <button HtmlType="submit" class="btn btn-danger">
-                            Delete Badge
+                            Delete
                         </button>
                     </Popconfirm>
 
