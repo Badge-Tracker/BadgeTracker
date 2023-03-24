@@ -6,64 +6,62 @@
 
 
 
-<div class="container-fluid">
-
-    <div class="row">
-
-        <div class="col-2">
-        </div>
-        <div class="col-4">
-            <h4 class="text-center">Name: </h4>
-            <p class="text-center">@user.Name</p>
-            <br>
-            <h4 class="text-center">Email: </h4>
-            <p class="text-center">@user.Email</p>
-
-
-            <br>
-            <br>
-            <div class="d-flex justify-content-center">
-                <Popconfirm Title="Are you sure you want to delete this person?" Icon="close-circle">
-                    <button HtmlType="submit" class="btn btn-danger">
-                        Delete Guide
-                    </button>
-                </Popconfirm> 
+@if (isDeleted)
+{
+    <h3>@user.Name has been deleted!</h3>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2">
             </div>
-            
-        </div>
-        <div class="col-4">
-             <h3>Badges Obtained</h3>
-            @foreach (EarnedBadge badge in earnedBadges)
-            {
-                <p>@badge.Badge.Name</p>
-            }
-            @foreach (CompletedActivity activity in completedActivities)
-            {
-                <p>@activity.Activity.Name</p>
-            }
-            @*<Tree @ref="tree" DefaultExpandAll Draggable BlockNode
-                        ShowIcon DataSource="games"
-                  TitleExpression="x => x.DataItem.Text"
-                  ChildrenExpression="x => x.DataItem.Items"
-                  IconExpression="x => x.DataItem.Icon"
-                  IsLeafExpression="x => x.DataItem.Items?.Count == 0"
-                  KeyExpression="x => x.DataItem.Id"
-                  TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
-            </Tree>*@
-        </div>
-    
-
-        <div class="col-2">
-
+            <div class="col-4">
+                <h4 class="text-center">Name: </h4>
+                <p class="text-center">@user.Name</p>
+                <br>
+                <h4 class="text-center">Email: </h4>
+                <p class="text-center">@user.Email</p>
+                <br>
+                <br>
+                <div class="d-flex justify-content-center">
+                    <Popconfirm OnConfirm="() => OnDeleteConfirm(user)" Title="Are you sure you want to delete this person?" Icon="close-circle">
+                        <button HtmlType="submit" class="btn btn-danger">
+                            Delete Guide
+                        </button>
+                    </Popconfirm> 
+                </div>
+            </div>
+            <div class="col-4">
+                <h3>Badges Obtained</h3>
+                @foreach (EarnedBadge badge in earnedBadges)
+                {
+                    <p>@badge.Badge.Name</p>
+                }
+                @foreach (CompletedActivity activity in completedActivities)
+                {
+                    <p>@activity.Activity.Name</p>
+                }
+                @*<Tree @ref="tree" DefaultExpandAll Draggable BlockNode
+                    ShowIcon DataSource="games"
+                TitleExpression="x => x.DataItem.Text"
+                ChildrenExpression="x => x.DataItem.Items"
+                IconExpression="x => x.DataItem.Icon"
+                IsLeafExpression="x => x.DataItem.Items?.Count == 0"
+                KeyExpression="x => x.DataItem.Id"
+                TItem="GameElement" OnDragEnd="e=> { }" OnDrop="onDrop">
+        </Tree>*@
+            </div>
+            <div class="col-2">
+            </div>
         </div>
     </div>
-   
-    
-
-
-</div>
+}
 
 @code {
+
+    [Parameter]
+    public string ID { get; set; }
 
     Tree<GameElement> tree;
 
@@ -135,6 +133,7 @@
     private User user;
     private List<EarnedBadge> earnedBadges = new();
     private List<CompletedActivity> completedActivities = new();
+    private bool isDeleted = false;
 
     protected async override Task OnInitializedAsync()
     {
@@ -145,16 +144,14 @@
         completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
     }
 
+    private async Task OnDeleteConfirm(User user)
+    {
+        await UserService.DeleteUser(user);
+        isDeleted = true;
+    }
+
     void onDrop(TreeEventArgs<GameElement> e)
     {
 
     }
 }
-
-
-
-    @code
-    {
-        [Parameter]
-        public string ID { get; set; }
-    }
