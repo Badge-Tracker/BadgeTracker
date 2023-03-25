@@ -12,5 +12,6 @@
         Task RemoveActivityFromUser(User user, CompletedActivity activity);
         Task UpdateUser(User user);
         Task AddUser(User user);
+        Task DeleteUser(User user);
     }
 }
