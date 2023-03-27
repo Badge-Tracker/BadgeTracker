@@ -62,3 +62,24 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.panel {
+    margin: auto auto;
+    width: 75%;
+    background: #ebebeb59;
+    border: 1px solid #74747466;
+    border-radius: 3px;
+}
+
+.nav-bg {
+    background-color: #3e3e3e !important;
+    color: #1890ff !important;
+}
+
+.nav-bg a {
+    color: #1890ff !important;
+}
+
+h3 {
+    text-align: center;
+}

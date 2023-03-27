@@ -1,34 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
 
-<Menu Mode=MenuMode.Horizontal style="background-color: grey; ">
+<Menu Mode=MenuMode.Horizontal class="nav-bg">
     <MenuItem Key="app" class="menuitem">
-        <a href="/UserManagement" style="color: black;">Girl Scout Management</a>
+        <a href="/UserManagement">Girl Scout Management</a>
     </MenuItem>
     <MenuItem Key="badge" class="menuitem">
-        <a href="/BadgeManagement" style="color: black;">Badge Management</a>
+        <a href="/BadgeManagement">Badge Management</a>
     </MenuItem>
-   
     <div class="floatright">
-        <a href="/" style="font-size:20px; color:black; margin-right:20px;">
+        <a href="/" style="font-size:20px; margin-right:20px;">
             Badge Tracker
-
-
-
         </a>
-            
-                <a href="/">
-                    <Icon Type="home" class="icon" style="font-size: 20px; margin-right:20px; color:black"/>
-                   </a>
-
-
-            <a href="/">
-            <Icon Type="logout" Theme="outline" style="font-size: 20px; margin-right:20px; color:black;" />
-            </a>
-            
-
-
-
+        <a href="/">
+            <Icon Type="home" class="icon" style="font-size: 20px; margin-right:20px;"/>
+        </a>
+        <a href="/">
+            <Icon Type="logout" Theme="outline" style="font-size: 20px; margin-right:20px;" />
+        </a>
     </div>
 </Menu>
 
