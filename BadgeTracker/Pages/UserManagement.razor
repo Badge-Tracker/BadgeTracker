@@ -36,15 +36,15 @@
             <Dropdown @ref="@_dropdown">
                 <Overlay>
                     <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
+                        <MenuItem Class="badge-item earned-title">Badges</MenuItem>
                         @foreach (EarnedBadge badge in earnedBadges[data.UserId])
                         {
-                            prereqCounter++;
-                            <MenuItem Id="@prereqCounter.ToString()">@badge.Badge.Name</MenuItem>
+                            <a href="/EditBadge/@badge.BadgeId"><MenuItem Class="badge-item">@badge.Badge.Name</MenuItem></a>
                         }
+                        <MenuItem Class="activity-item earned-title" Style="margin-top: 4px;">Activities</MenuItem>
                         @foreach (CompletedActivity activity in completedActivities[data.UserId])
                         {
-                            prereqCounter++;
-                            <MenuItem Id="@prereqCounter.ToString()">@activity.Activity.Name</MenuItem>
+                            <a href="/EditActivity/@activity.ActivityId"><MenuItem Class="activity-item">@activity.Activity.Name</MenuItem></a>
                         }
                     </Menu>
                 </Overlay>

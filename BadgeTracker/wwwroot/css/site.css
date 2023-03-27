@@ -83,3 +83,16 @@ a, .btn-link {
 h3 {
     text-align: center;
 }
+
+.earned-title {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.badge-item {
+    background-color: #c5caff;
+}
+
+.activity-item {
+    background-color: #c5fff7;
+}
