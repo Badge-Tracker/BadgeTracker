@@ -2,13 +2,69 @@
 
 @inject IUserService UserService;
 @inject IEarnablesService EarnablesService;
-
+@inject NavigationManager NavigationManager
 @using System.Text.Json;
 @using System.Linq;
 
+<style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+</style>
+
+
+
 @if (isUpdated)
 {
-    <h3>Updated!</h3>
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                @if (badgeDeleted && activityDeleted)
+                {
+
+                    <h3>Deleted badges and activities from @user.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+
+                }
+                else if (badgeDeleted)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Deleted badges from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Added badge to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+
+                }
+                else if (activityDeleted)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Deleted activities from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Deleted activity from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
 }
 else {
     <div class="row panel">
@@ -78,6 +134,10 @@ else {
     private IEnumerable<Data.Badge> badgeSelections;
     private IEnumerable<Data.Activity> activitySelections;
     private bool isUpdated = false;
+    private bool badgeDeleted = false;
+    private bool activityDeleted = false;
+    private int badgeCount = 0;
+    private int activityCount = 0;
 
     protected async override Task OnInitializedAsync()
     {
@@ -97,34 +157,29 @@ else {
         }
     }
 
-    record Person(string Name);
-    private List<Person> _persons = new List<Person>
-        {
-            new Person("John"),
-            new Person("Lucy"),
-            new Person("Jack"),
-            new Person("Emily"),
-        };
-
     private async Task OnFinish(EditContext editContext)
     {
         if (badgeSelections != null)
         {
+            badgeDeleted = true;
             foreach (Data.Badge badge in badgeSelections)
             {
                 List<EarnedBadge> earnedBadges = await EarnablesService.GetEarnedBadgesByBadgeId(badge.Id);
                 EarnedBadge badgeToRemove = earnedBadges.Where(b => b.UserId == parsedId).FirstOrDefault();
                 await UserService.RemoveBadgeFromUser(user, badgeToRemove);
+                badgeCount++;
             }
         }
 
         if (activitySelections != null)
         {
+            activityDeleted = true;
             foreach (Activity activity in activitySelections)
             {
                 List<CompletedActivity> completedActivities = await EarnablesService.GetCompletedActivitiesByActivityId(activity.Id);
                 CompletedActivity activityToRemove = completedActivities.Where(b => b.UserId == parsedId).FirstOrDefault();
                 await UserService.RemoveActivityFromUser(user, activityToRemove);
+                activityCount++;
             }
         }
         isUpdated = true;
@@ -133,6 +188,11 @@ else {
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
     }
 
 }

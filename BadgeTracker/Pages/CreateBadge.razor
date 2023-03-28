@@ -4,8 +4,8 @@
 @using BadgeTracker.Data;
 
 @inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
 
-<h3>Create a new Badge or Activity</h3>
 
 
 
@@ -13,10 +13,28 @@
 <div class="container-fluid panel">
     @if (isCreated)
     {
-        <h3>Created!</h3>
+        <div class="container full-height">
+            <div class="row full-height centered-content">
+                <div class="col-md-6 text-center">
+                    @if(newBadge.Name != null)
+                    {
+                        <h3>Created @newBadge.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                    }
+                    else if(newActivity.Name != null)
+                    {
+                        <h3>Created @newActivity.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                    }
+                    
+
+                </div>
+            </div>
+        </div>
     }
     else if (isBadge)
     {
+        <h3>Create a new Badge or Activity</h3>
         <Form Model="@newBadge"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -99,12 +117,6 @@
                 </div>
             </div>
             </div>
-
-        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <button HtmlType="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </FormItem>-->
         <div class="d-flex justify-content-center">
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
                 <button HtmlType="submit" class="btn btn-primary">
@@ -162,11 +174,7 @@
             </div>
         </div>
 
-        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <button HtmlType="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </FormItem>-->
+      
         <div class="d-flex justify-content-center">
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
                 <button HtmlType="submit" class="btn btn-primary">
@@ -182,6 +190,17 @@
 
 
 <style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
     .avatar-uploader > .ant-upload {
         width: 128px;
         height: 128px;
@@ -266,6 +285,10 @@
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void GoToBadgeManagement()
+    {
+        NavigationManager.NavigateTo("/BadgeManagement");
     }
 }
 

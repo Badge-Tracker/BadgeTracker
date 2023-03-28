@@ -2,17 +2,38 @@
 
 @using System.Text.Json;
 @inject IUserService UserService;
+@inject NavigationManager NavigationManager
 
-<h3 class="text-center">Edit A Guide</h3>
+<style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+</style>
 
 
 
 @if (isUpdated)
 {
-    <h3>Updated!</h3>
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                <h3>Updated @user.Name!</h3>
+                <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+            </div>
+        </div>
+    </div>
 }
 else
 {
+    <h3 class="text-center">Edit A Guide</h3>
     <div class="container-fluid panel">
         <Form Model="@user"
             OnFinish="OnFinish"
@@ -65,7 +86,7 @@ else
 }
                 
 
-                @code
+@code
 {
     [Parameter]
     public string ID { get; set; }
@@ -84,16 +105,6 @@ else
     }
 
     private Model model = new Model();
-
-
-    record Person(string Name);
-    private List<Person> _persons = new List<Person>
-        {
-            new Person("John"),
-            new Person("Lucy"),
-            new Person("Jack"),
-            new Person("Emily"),
-        };
 
     private User user;
     private string formSize = AntSizeLDSType.Small;
@@ -115,6 +126,10 @@ else
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
     }
 
 }

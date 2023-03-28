@@ -5,14 +5,68 @@
 
 @inject IUserService UserService;
 @inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
 
+<style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+</style>
 
 
 
 
 @if(isAdded)
 {
-    <h3>Added!</h3>
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                @if(badgeAdded && activityAdded)
+                {
+                   
+                    <h3>Added badges and activities to @user.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+
+
+                }else if (badgeAdded)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Added badges to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Added badge to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    
+                }
+                else if (activityAdded)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Added activities to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Added activity to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                }
+                
+            </div>
+        </div>
+    </div>
 }
 else
 {
@@ -92,14 +146,7 @@ else
     }
     public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
     private Model model = new Model();
-    record Person(string Name);
-    private List<Person> _persons = new List<Person>
-        {
-            new Person("John"),
-            new Person("Lucy"),
-            new Person("Jack"),
-            new Person("Emily"),
-        };
+
 
     private List<EarnedBadge> earnedBadges = new();
     private List<CompletedActivity> completedActivities = new();
@@ -109,6 +156,10 @@ else
     private IEnumerable<Data.Badge> badgeSelections;
     private IEnumerable<Data.Activity> activitySelections;
     private bool isAdded = false;
+    private bool badgeAdded = false;
+    private bool activityAdded = false;
+    private int badgeCount = 0;
+    private int activityCount = 0;
 
     protected async override Task OnInitializedAsync()
     {
@@ -143,16 +194,22 @@ else
 
         if (badgeSelections != null)
         {
+            //set bool to true 
+            badgeAdded = true;
             foreach (Data.Badge badge in badgeSelections)
             {
                 await UserService.AddBadgeToUser(user, badge);
+                badgeCount++;
             }
         }
         if (activitySelections != null)
         {
+            //set bool to true
+            activityAdded = true;
             foreach (Data.Activity activity in activitySelections)
             {
                 await UserService.AddActivityToUser(user, activity);
+                activityCount++;
             }
         }
         isAdded = true;
@@ -162,6 +219,10 @@ else
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
     }
 
 }
