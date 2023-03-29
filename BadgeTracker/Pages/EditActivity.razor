@@ -4,8 +4,9 @@
 @using BadgeTracker.Data;
 
 @inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
 
-<h3>Create a new Badge or Activity</h3>
+
 
 
 
@@ -13,10 +14,18 @@
 <div class="container-fluid panel">
     @if (isUpdated)
     {
-        <h3>Updated!</h3>
+        <div class="container full-height">
+            <div class="row full-height centered-content">
+                <div class="col-md-6 text-center">
+                    <h3>Updated @newActivity.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                </div>
+            </div>
+        </div>
     }
     else
     {
+        <h3>Create a new Badge or Activity</h3>
         <Form Model="@newActivity"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -48,12 +57,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <button HtmlType="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </FormItem>-->
         <div class="d-flex justify-content-center">
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
                 <button HtmlType="submit" class="btn btn-primary">
@@ -68,6 +71,17 @@
 
 
 <style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
     .avatar-uploader > .ant-upload {
         width: 128px;
         height: 128px;
@@ -138,6 +152,10 @@
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void GoToBadgeManagement()
+    {
+        NavigationManager.NavigateTo("/BadgeManagement");
     }
 }
 

@@ -4,19 +4,24 @@
 @using BadgeTracker.Data;
 
 @inject IEarnablesService EarnablesService;
-
-<h3>Create a new Badge or Activity</h3>
-
-
+@inject NavigationManager NavigationManager
 
 
 <div class="container-fluid panel">
     @if (isUpdated)
     {
-        <h3>Updated!</h3>
+        <div class="container full-height">
+            <div class="row full-height centered-content">
+                <div class="col-md-6 text-center">
+                    <h3>Updated @newBadge.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                </div>
+            </div>
+        </div>
     }
     else
     {
+        <h3>Create a new Badge or Activity</h3>
         <Form Model="@newBadge"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -46,7 +51,7 @@
                         <Select Mode="multiple"
                                 DataSource="@badges"
                                 @bind-Values="@badgeSelectionsEnumerable"
-                                Placeholder="Select one or more badge prerequisites"
+                                Placeholder="Select prerequisites"
                                 TItemValue="Data.Badge"
                                 TItem="Data.Badge"
                                 DefaultValues="@badgeSelectionsEnumerable"
@@ -61,7 +66,7 @@
                         <Select Mode="multiple"
                                 DataSource="@activities"
                                 @bind-Values="@activitySelectionsEnumerable"
-                                Placeholder="Select one or more activity prerequisites"
+                                Placeholder="Select prerequisites"
                                 TItemValue="Activity"
                                 TItem="Activity"
                                 DefaultValues="@activitySelectionsEnumerable"
@@ -69,21 +74,17 @@
                         </Select>
                     </FormItem>
                 </div>
-            </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Description">
-                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
-                    </FormItem>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="item">
+                            <FormItem Label="Description">
+                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description" style="width:350px;" />
+                            </FormItem>
+                        </div>
+                    </div>
+                </div>
         </div>
-
-        <!-- <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <button HtmlType="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </FormItem>-->
         <div class="d-flex justify-content-center">
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
                 <button HtmlType="submit" class="btn btn-primary">
@@ -98,6 +99,17 @@
 
 
 <style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
     .avatar-uploader > .ant-upload {
         width: 128px;
         height: 128px;
@@ -195,6 +207,10 @@
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    private void GoToBadgeManagement()
+    {
+        NavigationManager.NavigateTo("/BadgeManagement");
     }
 }
 
