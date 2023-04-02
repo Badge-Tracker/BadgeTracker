@@ -46,18 +46,18 @@
             <PropertyColumn Property="b=>b.Name"></PropertyColumn>
             <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
             <Column TData="string" Title="Badge Prerequisites">
-                <Dropdown @ref="@_dropdown">
+                <Dropdown>
                     <Overlay>
                         <Menu AutoCloseDropdown="@false">
+                            <MenuItem Class="badge-item earned-title">Badges</MenuItem>
                             @foreach (Data.Badge badge in data.Prerequisites.Badges)
                             {
-                                prereqCounter++;
-                                <MenuItem Id="@prereqCounter.ToString()">@badge.Name</MenuItem>
+                                <a href="/EditBadge/@badge.Id"><MenuItem Class="badge-item">@badge.Name</MenuItem></a>
                             }
+                            <MenuItem Class="activity-item earned-title" Style="margin-top: 4px;">Activities</MenuItem>
                             @foreach (Activity activity in data.Prerequisites.Activities)
                             {
-                                prereqCounter++;
-                                <MenuItem Id="@prereqCounter.ToString()">@activity.Name</MenuItem>
+                                <a href="/EditActivity/@activity.Id"><MenuItem Class="activity-item">@activity.Name</MenuItem></a>
                             }
                         </Menu>
                     </Overlay>
@@ -85,7 +85,6 @@ else
             <PropertyColumn Title="Description" Property="a=>a.Description"></PropertyColumn>
             <ActionColumn Title="Action" class="text-center" Width="10%">
                 <a href="EditActivity/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
-                <!-- pop confirm doesnt seem to have any other code than this....? doesnt seem like it would delete database stuff...-->
                 <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete activity?" Icon="close-circle">
                     <a class="text-danger"><i class="material-icons">delete</i></a>
                 </Popconfirm>
@@ -105,15 +104,10 @@ else
     private bool isFilterByBadge = true;
     private List<Data.Badge> badges;
     private List<Activity> activities;
-    private int prereqCounter = 0;
-
 
     private string txtValue { get; set; }
     private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.ToLower().Contains(txtValue)).ToList();
     private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.ToLower().Contains(txtValue)).ToList();
-
-    int i = 0;
-    string editId;
 
     protected async override Task OnInitializedAsync()
     {
@@ -136,49 +130,9 @@ else
         badges = await EarnablesService.GetAllBadges();
         activities = await EarnablesService.GetAllActivities();
     }
-    private Dropdown _dropdown;
 
     private void CreateBadge()
     {
         NavigationManager.NavigateTo("/CreateBadge");
     }
-
-    <!-- Modal Code Below -->
-    private Func<ModalClosingEventArgs, Task> OnOkClick = async (e) =>
-    {
-        await Task.Delay(1000);
-    };
-
-    private void ShowConfirm()
-    {
-        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
-
-        _modalService.Confirm(new ConfirmOptions()
-        {
-            Title = "Do you want to delete these items?",
-            Icon = icon,
-            Content = "When clicked the OK button, this dialog will be closed after 1 second",
-            OnOk = OnOkClick
-        });
-    }
-
-    private Func<ModalClosingEventArgs, Task> OnNotOkClick = async (e) =>
-    {
-        await Task.Delay(1000);
-        e.Cancel = true;
-    };
-
-    private void ShowConfirmNotClose()
-    {
-        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
-
-        _modalService.Confirm(new ConfirmOptions()
-        {
-            Title = "Do you want to delete these items?",
-            Icon = icon,
-            Content = "When clicked the OK button, this dialog will cancel the closing in 1 second",
-            OnOk = OnNotOkClick
-        });
-    }
-
 }

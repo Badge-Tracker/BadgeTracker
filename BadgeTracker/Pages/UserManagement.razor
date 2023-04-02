@@ -33,9 +33,9 @@
         </Column>
 
         <Column TData="string" Title="Earned Badges">
-            <Dropdown @ref="@_dropdown">
+            <Dropdown>
                 <Overlay>
-                    <Menu OnMenuItemClicked="HandleMenuClick" AutoCloseDropdown="@false">
+                    <Menu AutoCloseDropdown="@false">
                         <MenuItem Class="badge-item earned-title">Badges</MenuItem>
                         @foreach (EarnedBadge badge in earnedBadges[data.UserId])
                         {
@@ -83,28 +83,11 @@
 </style>
 
 @code{
-
-    record ItemData
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public string Address { get; set; }
-    };
-
-    IDictionary<string, (bool edit, ItemData data)> editCache = new Dictionary<string, (bool edit, ItemData data)>();
-    List<ItemData> listOfData = new();
-
-    int i = 0;
-    string editId;
-
     private string txtValue = "";
     private List<User> users;
     private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList();
     private Dictionary<int, List<EarnedBadge>> earnedBadges = new();
     private Dictionary<int, List<CompletedActivity>> completedActivities = new();
-    private int prereqCounter = 0;
-
 
     protected async override Task OnInitializedAsync()
     {
@@ -127,15 +110,4 @@
                 completedActivities[user.UserId] = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
         }
     }
-
-    private Dropdown _dropdown;
-
-    private async void HandleMenuClick(MenuItem item)
-    {
-        if (item.Id == "3")
-        {
-            await _dropdown.Close();
-        }
-    }
-
 }
