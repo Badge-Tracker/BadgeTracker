@@ -327,7 +327,7 @@ namespace BadgeTrackerTest
         {
             // Arrange
             string name = "Test Badge Test";
-            Badge badge = new Badge { Name = name };
+            Badge badge = new Badge { Name = name, CreatedBy = 0 };
 
             // Act
             EarnablesService earnablesService = new();
@@ -351,7 +351,7 @@ namespace BadgeTrackerTest
         {
             // Arrange
             string name = "Test Activity_DB Test";
-            Activity activity = new Activity { Name = name };
+            Activity activity = new Activity { Name = name, CreatedBy= 0 };
 
             // Act
             EarnablesService earnablesService = new();
