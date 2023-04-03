@@ -19,4 +19,8 @@
     <ProjectReference Include="..\BadgeTracker\BadgeTracker.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Database\Services\" />
+  </ItemGroup>
+
 </Project>

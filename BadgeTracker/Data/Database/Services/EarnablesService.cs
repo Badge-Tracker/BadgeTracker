@@ -228,5 +228,7 @@ namespace BadgeTracker.Data
                 // Logs errors later.
             }
         }
+
+
     }
 }
