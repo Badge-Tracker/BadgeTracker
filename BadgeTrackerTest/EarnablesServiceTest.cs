@@ -323,7 +323,7 @@ namespace BadgeTrackerTest
         /// Tests that a new badge is created successfully.
         /// </summary>
         [TestMethod]
-        public async Task Test_CreateNewBadge_Success()
+        public async Task TestCreateNewBadge()
         {
             // Arrange
             string name = "Test Badge Test";
@@ -337,8 +337,8 @@ namespace BadgeTrackerTest
             //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
 
             // Assert
-           // Assert.IsNotNull(createdBadge.FindLast);
-            Assert.AreEqual(name, createdBadge.Where(b=> b.Name == name));
+            // Assert.IsNotNull(createdBadge.FindLast);
+            Assert.IsTrue(createdBadge.Any(b => b.Name == name));
         }
 
 
@@ -347,7 +347,7 @@ namespace BadgeTrackerTest
         /// Tests that a new activity is created successfully.
         /// </summary>
         [TestMethod]
-        public async Task Test_CreateNewActivity_Success()
+        public async Task TestCreateNewActivity()
         {
             // Arrange
             string name = "Test Activity_DB Test";
@@ -358,11 +358,9 @@ namespace BadgeTrackerTest
             await earnablesService.CreateNewActivity(activity);
 
             List<Activity> createdActivity = await earnablesService.GetAllActivities();
-            //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
 
             // Assert
-            // Assert.IsNotNull(createdBadge.FindLast);
-            Assert.AreEqual(name, createdActivity.Where(b => b.Name == name));
+            Assert.IsTrue(createdActivity.Any(b => b.Name == name));
         }
 
 
@@ -371,7 +369,7 @@ namespace BadgeTrackerTest
         /// Tests that a  badge is successfully deleted.
         /// </summary>
         [TestMethod]
-        public async Task Test_DeleteBadge_Success()
+        public async Task TestDeleteBadge()
         {
             EarnablesService earnablesService = new();
 
