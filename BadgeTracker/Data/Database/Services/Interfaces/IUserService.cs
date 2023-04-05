@@ -1,5 +1,8 @@
 ﻿namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// User data service interface.
+    /// </summary>
     public interface IUserService
     {
         Task<User> GetUserById(int id);
@@ -8,8 +11,8 @@
         Task<List<User>> GetAllUsers();
         Task AddBadgeToUser(User user, Badge badge);
         Task AddActivityToUser(User user, Activity activity);
-        Task RemoveBadgeFromUser(User user, EarnedBadge badge);
-        Task RemoveActivityFromUser(User user, CompletedActivity activity);
+        Task RemoveBadgeFromUser(EarnedBadge badge);
+        Task RemoveActivityFromUser(CompletedActivity activity);
         Task UpdateUser(User user);
         Task AddUser(User user);
         Task DeleteUser(User user);
