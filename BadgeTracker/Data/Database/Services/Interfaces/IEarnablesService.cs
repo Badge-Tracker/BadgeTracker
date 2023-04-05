@@ -1,5 +1,8 @@
 ﻿namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// Earnables data service interface.
+    /// </summary>
     public interface IEarnablesService
     {
         Task<List<Badge>> GetAllBadges();

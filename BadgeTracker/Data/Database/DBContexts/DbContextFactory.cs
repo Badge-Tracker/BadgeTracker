@@ -2,8 +2,14 @@
 
 namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// DbContextFactory which ensures thread safe database operations.
+    /// </summary>
     public class DbContextFactory
     {
+        /// <summary>
+        /// DbContextOptions to use throughout the application.
+        /// </summary>
         private static DbContextOptions dbContextOptions = null;
 
         /// <summary>

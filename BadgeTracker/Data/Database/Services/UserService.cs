@@ -2,8 +2,16 @@
 
 namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// User data service.
+    /// </summary>
     public class UserService : IUserService
     {
+        /// <summary>
+        /// Fetch user by ID.
+        /// </summary>
+        /// <param name="id">User ID.</param>
+        /// <returns>Specified user.</returns>
         public async Task<User> GetUserById(int id)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -19,6 +27,11 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Fetch user by name.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <returns>Specified user.</returns>
         public async Task<User> GetUserByName(string name)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -34,6 +47,11 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Fetch user by email.
+        /// </summary>
+        /// <param name="email">Email.</param>
+        /// <returns>Specified user.</returns>
         public async Task<User> GetUserByEmail(string email)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -49,6 +67,10 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Fetch all users.
+        /// </summary>
+        /// <returns>A list of all users.</returns>
         public async Task<List<User>> GetAllUsers()
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -63,6 +85,13 @@ namespace BadgeTracker.Data
                 return null;
             }
         }
+
+        /// <summary>
+        /// Add an earned badge to user.
+        /// </summary>
+        /// <param name="user">User to add to.</param>
+        /// <param name="badge">Badge to add.</param>
+        /// <returns>Task.</returns>
         public async Task AddBadgeToUser(User user, Badge badge)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -71,8 +100,8 @@ namespace BadgeTracker.Data
             {
                 UserId = user.UserId,
                 BadgeId = badge.Id,
-                AwardedBy = 0,
-                CompletedBy = 0,
+                AwardedBy = 0, // TODO: Not implemented.
+                CompletedBy = 0 // TODO: Not implemented.
             };
 
             try
@@ -85,6 +114,13 @@ namespace BadgeTracker.Data
                 // Logs errors later.
             }
         }
+
+        /// <summary>
+        /// Add a completed activity to a user.
+        /// </summary>
+        /// <param name="user">User to add to.</param>
+        /// <param name="activity">Activity to add.</param>
+        /// <returns>Task.</returns>
         public async Task AddActivityToUser(User user, Activity activity)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -93,7 +129,7 @@ namespace BadgeTracker.Data
             {
                 ActivityId = activity.Id,
                 UserId = user.UserId,
-                CompletedBy = 0
+                CompletedBy = 0 // TODO: Not implemented.
             };
 
             try
@@ -107,6 +143,11 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Update a user in the database.
+        /// </summary>
+        /// <param name="user">Updated user.</param>
+        /// <returns></returns>
         public async Task UpdateUser(User user)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -122,6 +163,11 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Add a new user to the database.
+        /// </summary>
+        /// <param name="user">New user to add.</param>
+        /// <returns>Task.</returns>
         public async Task AddUser(User user)
         {
             using var dbContext = DbContextFactory.CreateInstance();
@@ -137,7 +183,12 @@ namespace BadgeTracker.Data
             }
         }
 
-        public async Task RemoveBadgeFromUser(User user, EarnedBadge badge)
+        /// <summary>
+        /// Remove earned badge from user.
+        /// </summary>
+        /// <param name="badge">Badge to remove.</param>
+        /// <returns>Task.</returns>
+        public async Task RemoveBadgeFromUser(EarnedBadge badge)
         {
             using var dbContext = DbContextFactory.CreateInstance();
 
@@ -151,7 +202,13 @@ namespace BadgeTracker.Data
                 // Logs errors later.
             }
         }
-        public async Task RemoveActivityFromUser(User user, CompletedActivity activity)
+
+        /// <summary>
+        /// Remove completed activity from user.
+        /// </summary>
+        /// <param name="activity">Activity to remove.</param>
+        /// <returns></returns>
+        public async Task RemoveActivityFromUser(CompletedActivity activity)
         {
             using var dbContext = DbContextFactory.CreateInstance();
 
@@ -166,18 +223,25 @@ namespace BadgeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Delete user from database.
+        /// </summary>
+        /// <param name="user">User to delete.</param>
+        /// <returns></returns>
         public async Task DeleteUser(User user)
         {
             using var dbContext = DbContextFactory.CreateInstance();
 
             try
             {
+                // Delete all completed activities and earned badges.
                 foreach (CompletedActivity completedActivity in dbContext.CompletedActivities)
                     dbContext.CompletedActivities.Remove(completedActivity);
 
                 foreach (EarnedBadge earnedBadge in dbContext.EarnedBadges)
                     dbContext.EarnedBadges.Remove(earnedBadge);
 
+                // Delete user.
                 dbContext.Users.Remove(user);
                 await dbContext.SaveChangesAsync();
             }

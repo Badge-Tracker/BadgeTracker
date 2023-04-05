@@ -1,7 +1,13 @@
 ﻿namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// DbInitializer class used to populate the database with test information for debugging purposes.
+    /// </summary>
     public class DbInitializer
     {
+        /// <summary>
+        /// Initialize the database.
+        /// </summary>
         public static void Initialize()
         {
             InitializeBadges();
@@ -9,6 +15,9 @@
             InitializeUsers();
         }
 
+        /// <summary>
+        /// Initialize test badges.
+        /// </summary>
         private static void InitializeBadges()
         {
             using var context = DbContextFactory.CreateInstance();
@@ -30,6 +39,9 @@
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Initialize test activities.
+        /// </summary>
         private static void InitializeActivities()
         {
             using var context = DbContextFactory.CreateInstance();
@@ -50,6 +62,9 @@
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Initialize test users.
+        /// </summary>
         private static void InitializeUsers()
         {
             using var context = DbContextFactory.CreateInstance();
