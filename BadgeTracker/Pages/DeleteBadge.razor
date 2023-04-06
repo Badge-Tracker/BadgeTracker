@@ -43,7 +43,7 @@
                     }
                     else
                     {
-                        <h3>Added badge to @user.Name!</h3>
+                        <h3>Deleted badge from @user.Name!</h3>
                         <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
                     }
 
@@ -166,7 +166,7 @@ else {
             {
                 List<EarnedBadge> earnedBadges = await EarnablesService.GetEarnedBadgesByBadgeId(badge.Id);
                 EarnedBadge badgeToRemove = earnedBadges.Where(b => b.UserId == parsedId).FirstOrDefault();
-                await UserService.RemoveBadgeFromUser(user, badgeToRemove);
+                await UserService.RemoveBadgeFromUser(badgeToRemove);
                 badgeCount++;
             }
         }
@@ -178,7 +178,7 @@ else {
             {
                 List<CompletedActivity> completedActivities = await EarnablesService.GetCompletedActivitiesByActivityId(activity.Id);
                 CompletedActivity activityToRemove = completedActivities.Where(b => b.UserId == parsedId).FirstOrDefault();
-                await UserService.RemoveActivityFromUser(user, activityToRemove);
+                await UserService.RemoveActivityFromUser(activityToRemove);
                 activityCount++;
             }
         }

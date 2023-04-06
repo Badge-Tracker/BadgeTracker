@@ -1,12 +1,17 @@
 ﻿namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// RoleTypeEnum class.
+    /// </summary>
     public class RoleTypeEnum
     {
+        /// <summary>
+        /// Roles enum which represents all available user roles.
+        /// </summary>
         public enum Roles
         {
-            // The lower the role number, the greather the permissions.
             Admin = 0,
-            User = 1 // TODO: NOT IMPLEMENTED.
+            User = 1
         }
     }
 }

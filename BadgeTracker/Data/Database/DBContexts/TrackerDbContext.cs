@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 
 namespace BadgeTracker.Data
 {
+    /// <summary>
+    /// Database context for the BadgeTracker.
+    /// </summary>
     public class TrackerDbContext : DbContext
     {
         public TrackerDbContext(DbContextOptions options) : base(options) { }
@@ -30,7 +33,8 @@ namespace BadgeTracker.Data
                 .HasForeignKey(a => a.ActivityId)
                 .OnDelete(DeleteBehavior.Cascade); // Deletes the CompletedActivity record if the Activity is deleted.
 
-
+            // Prerequisites are stored as JSON inside of the Badge object.
+            // Deserialized here into a Prerequisites object.
             modelBuilder.Entity<Badge>().ToTable("Badges");
             modelBuilder.Entity<Badge>()
                 .Property(b => b.Prerequisites)
