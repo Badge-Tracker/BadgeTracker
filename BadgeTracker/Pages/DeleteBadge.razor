@@ -6,11 +6,27 @@
 @using System.Text.Json;
 @using System.Linq;
 
+<style>
+    .full-height {
+        min-height: 100vh;
+    }
+
+    .centered-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+</style>
+
+
+
 @if (isUpdated)
 {
     <div class="container full-height">
-        <div class="row mb-4 mt-4">
-            <div class="col-md-6">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
                 @if (badgeDeleted && activityDeleted)
                 {
 
@@ -50,52 +66,51 @@
         </div>
     </div>
 }
-else
-{
+else {
+    <div class="row panel">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class ="text-center">Delete Badge or Activity</h3>
+            <Form Model="@model"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@model.Size">
 
-    <div class="d-flex justify-content-center">
-        <div class="row mt-4 mb-4 panel">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <h3 class="text-center">Delete Badge or Activity</h3>
-                <Form Model="@model"
-                      OnFinish="OnFinish"
-                      OnFinishFailed="OnFinishFailed"
-                      Size="@model.Size">
+                <FormItem Label="Badges">
+                    <Select Mode="multiple"
+                        DataSource="@badges"
+                        @bind-Values="@badgeSelections"
+                        Placeholder="Select one or more badges"
+                        TItemValue="Data.Badge"
+                        TItem="Data.Badge"
+                        LabelName="@nameof(Data.Badge.Name)">
+                    </Select>
+                </FormItem>
 
-                    <FormItem Label="Badges">
-                        <Select Mode="multiple"
-                                DataSource="@badges"
-                                @bind-Values="@badgeSelections"
-                                Placeholder="Select one or more badges"
-                                TItemValue="Data.Badge"
-                                TItem="Data.Badge"
-                                LabelName="@nameof(Data.Badge.Name)">
-                        </Select>
-                    </FormItem>
+                <FormItem Label="Activities">
+                    <Select Mode="multiple"
+                        DataSource="@activities"
+                        @bind-Values="@activitySelections"
+                        Placeholder="Select one or more activities"
+                        TItemValue="Activity"
+                        TItem="Activity"
+                        LabelName="@nameof(Activity.Name)">
+                    </Select>
+                </FormItem>
 
-                    <FormItem Label="Activities">
-                        <Select Mode="multiple"
-                                DataSource="@activities"
-                                @bind-Values="@activitySelections"
-                                Placeholder="Select one or more activities"
-                                TItemValue="Activity"
-                                TItem="Activity"
-                                LabelName="@nameof(Activity.Name)">
-                        </Select>
-                    </FormItem>
 
-                    <div class="d-flex justify-content-center">
-                        <Popconfirm Title="Are you sure you want to delete these?" Icon="close-circle">
-                            <button HtmlType="submit" class="btn btn-danger">
-                                Delete
-                            </button>
-                        </Popconfirm>
+                <div class="d-flex justify-content-center">
+                    <Popconfirm Title="Are you sure you want to delete these?" Icon="close-circle">
+                        <button HtmlType="submit" class="btn btn-danger">
+                            Delete
+                        </button>
+                    </Popconfirm>
 
-                    </div>
-                </Form>
-            </div>
-            <div class="col-md-3"></div>
+                </div>
+            </Form>
+        </div>
+        <div class="col">
         </div>
     </div>
 }
