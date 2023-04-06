@@ -6,11 +6,6 @@
 @inject IEarnablesService EarnablesService;
 @inject NavigationManager NavigationManager
 
-
-
-
-
-
 <div class="container-fluid panel">
     @if (isUpdated)
     {
@@ -25,7 +20,7 @@
     }
     else
     {
-        <h3>Create a new Badge or Activity</h3>
+        <h3>Edit Activity</h3>
         <Form Model="@newActivity"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -40,7 +35,6 @@
                 </RadioGroup>
             </FormItem>
         </div>
-
         <div class="row">
             <div class="col">
                 <div class="item">
@@ -64,95 +58,66 @@
                 </button>
             </FormItem>
         </div>
-
     </Form>
     }
 </div>
 
-
-<style>
-    .full-height {
-        min-height: 100vh;
-    }
-
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-    .avatar-uploader > .ant-upload {
-        width: 128px;
-        height: 128px;
-    }
-
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .row {
-        display: flex;
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-
-    .col-8 {
-        flex-basis: 66.67%;
-        padding-right: 10px;
-    }
-
-    .col-2 {
-        flex-basis: 16.67%;
-        padding-right: 10px;
-    }
-
-    .item {
-        padding: 10px;
-    }
-
-    .imageItem {
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .center {
-        margin: auto;
-        width: 50%;
-        border: 3px solid green;
-        padding: 10px;
-    }
-</style>
-
 @code
 {
+
+    /// <summary>
+    /// Activity ID
+    /// </summary>
     [Parameter]
     public string Id { get; set; }
 
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
     private string formSize = AntSizeLDSType.Small;
+
+    /// <summary>
+    /// This is the activity that is currently being edited
+    /// </summary>
     private Activity newActivity = new();
+
+    /// <summary>
+    /// Whether the activity has been updated or not
+    /// </summary>
     private bool isUpdated = false;
 
-
+    /// <summary>
+    /// The initial load of the activity
+    /// </summary>
+    /// <returns>The activity that is being updated</returns>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(Id, out int id);
         newActivity = await EarnablesService.GetActivityById(id);
     }
 
+    /// <summary>
+    /// When the activity has been finished updating
+    /// </summary>
+    /// <param name="editContext"></param>
     private async void OnFinish(EditContext editContext)
     {
         await EarnablesService.UpdateActivity(newActivity);
         isUpdated = true;
     }
 
+    /// <summary>
+    /// If the update has failed it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
     private void GoToBadgeManagement()
     {
         NavigationManager.NavigateTo("/BadgeManagement");

@@ -21,7 +21,7 @@
     }
     else
     {
-        <h3>Create a new Badge or Activity</h3>
+        <h3>Edit Badge</h3>
         <Form Model="@newBadge"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -38,14 +38,16 @@
         </div>
 
         <div class="row">
-            <div class="col">
+            <div class="col-md-6">
                 <div class="item">
                     <FormItem Label="Name">
                         <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
                     </FormItem>
                 </div>
             </div>
-            <div class="col">
+            </div>
+            <div class="row">
+            <div class="col-md-6">
                 <div class="item">
                     <FormItem Label="Prerequisite Badges">
                         <Select Mode="multiple"
@@ -60,7 +62,7 @@
                     </FormItem>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-md-6">
                 <div class="item">
                     <FormItem Label="Prerequisite Activities">
                         <Select Mode="multiple"
@@ -76,10 +78,10 @@
                 </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-md-8">
                         <div class="item">
                             <FormItem Label="Description">
-                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description" style="width:350px;" />
+                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description"/>
                             </FormItem>
                         </div>
                     </div>
@@ -97,80 +99,56 @@
     }
 </div>
 
-
-<style>
-    .full-height {
-        min-height: 100vh;
-    }
-
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-    .avatar-uploader > .ant-upload {
-        width: 128px;
-        height: 128px;
-    }
-
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .row {
-        display: flex;
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-
-    .col-8 {
-        flex-basis: 66.67%;
-        padding-right: 10px;
-    }
-
-    .col-2 {
-        flex-basis: 16.67%;
-        padding-right: 10px;
-    }
-
-    .item {
-        padding: 10px;
-    }
-
-    .imageItem {
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .center {
-        margin: auto;
-        width: 50%;
-        border: 3px solid green;
-        padding: 10px;
-    }
-</style>
-
 @code
 {
+    /// <summary>
+    /// This is the id of the badge
+    /// </summary>
     [Parameter]
     public string Id { get; set; }
 
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
     private string formSize = AntSizeLDSType.Small;
+    /// <summary>
+    /// Updating badge will be identified by badge ID.
+    /// </summary>
     private Data.Badge newBadge = new();
+    /// <summary>
+    /// If the badge has been successfully updated.
+    /// </summary>
     private bool isUpdated = false;
+    /// <summary>
+    /// The list of badges
+    /// </summary>
     private List<Data.Badge> badges;
+    /// <summary>
+    /// The list of activities
+    /// </summary>
     private List<Activity> activities;
+    /// <summary>
+    /// The list of badge selections
+    /// </summary>
     private List<Data.Badge> badgeSelections = new();
+    /// <summary>
+    /// Counting off the Badge selections
+    /// </summary>
     private IEnumerable<Data.Badge> badgeSelectionsEnumerable;
+    /// <summary>
+    /// The activity selections
+    /// </summary>
     private List<Activity> activitySelections = new();
+    /// <summary>
+    /// Counting off the Activity selections
+    /// </summary>
     private IEnumerable<Activity> activitySelectionsEnumerable;
 
 
+    /// <summary>
+    /// The initialized badge loaded content
+    /// </summary>
+    /// <returns>Returns all the badges and activities that are associated to that badge ID</returns>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(Id, out int id);
@@ -196,6 +174,10 @@
         activitySelectionsEnumerable = activitySelections;
     }
 
+    /// <summary>
+    /// When the selected badge has been updated
+    /// </summary>
+    /// <param name="editContext"></param>
     private async void OnFinish(EditContext editContext)
     {
         newBadge.Prerequisites.Badges = badgeSelectionsEnumerable?.ToList() ?? new List<Data.Badge>();
@@ -204,10 +186,18 @@
         isUpdated = true;
     }
 
+    /// <summary>
+    /// When the edit has failed it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
     private void GoToBadgeManagement()
     {
         NavigationManager.NavigateTo("/BadgeManagement");

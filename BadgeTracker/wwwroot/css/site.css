@@ -98,3 +98,59 @@ h3 {
 .activity-item {
     background-color: #c5fff7;
 }
+
+.full-height {
+    min-height: 100vh;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.avatar-uploader > .ant-upload {
+    width: 128px;
+    height: 128px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row {
+    display: flex;
+    flex-basis: 100%;
+    margin-bottom: 10px;
+}
+
+.col-8 {
+    flex-basis: 66.67%;
+    padding-right: 10px;
+}
+
+.col-2 {
+    flex-basis: 16.67%;
+    padding-right: 10px;
+}
+
+.item {
+    padding: 10px;
+}
+
+.imageItem {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    border: 3px solid green;
+    padding: 10px;
+}
