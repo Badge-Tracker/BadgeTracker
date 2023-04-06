@@ -8,7 +8,10 @@
 
 
 
-
+@*
+    If a guide has not been added it shows a page that allows you to create a new guide
+    If a guide has been added it will show a page that displays Created Girl Guide followed by the guide name
+*@
 @if (isCreated)
 {
 
@@ -68,6 +71,10 @@ else {
 
 @code
 {
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// </summary>
     public class Model
     {
         public string Size { get; set; } = AntSizeLDSType.Small;
