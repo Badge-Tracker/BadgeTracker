@@ -6,11 +6,6 @@
 @inject IEarnablesService EarnablesService;
 @inject NavigationManager NavigationManager
 
-
-
-
-
-
 <div class="container-fluid panel">
     @if (isUpdated)
     {
@@ -25,7 +20,7 @@
     }
     else
     {
-        <h3>Create a new Badge or Activity</h3>
+        <h3>Editing Activity</h3>
         <Form Model="@newActivity"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -69,90 +64,42 @@
     }
 </div>
 
-
-<style>
-    .full-height {
-        min-height: 100vh;
-    }
-
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-    .avatar-uploader > .ant-upload {
-        width: 128px;
-        height: 128px;
-    }
-
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .row {
-        display: flex;
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-
-    .col-8 {
-        flex-basis: 66.67%;
-        padding-right: 10px;
-    }
-
-    .col-2 {
-        flex-basis: 16.67%;
-        padding-right: 10px;
-    }
-
-    .item {
-        padding: 10px;
-    }
-
-    .imageItem {
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .center {
-        margin: auto;
-        width: 50%;
-        border: 3px solid green;
-        padding: 10px;
-    }
-</style>
-
 @code
 {
+    // ID of the Activity.
     [Parameter]
     public string Id { get; set; }
 
+    // Component for the sizing of the form.
     private string formSize = AntSizeLDSType.Small;
+
+    // The activity itself.
     private Activity newActivity = new();
+
+    // Whether the activity has been updated or not.
     private bool isUpdated = false;
 
-
+    // Getting the activity.
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(Id, out int id);
         newActivity = await EarnablesService.GetActivityById(id);
     }
 
+    // When the activity has been finished updating.
     private async void OnFinish(EditContext editContext)
     {
         await EarnablesService.UpdateActivity(newActivity);
         isUpdated = true;
     }
 
+    // If the update has failed.
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+
+    // The navigation to badge management page.
     private void GoToBadgeManagement()
     {
         NavigationManager.NavigateTo("/BadgeManagement");
