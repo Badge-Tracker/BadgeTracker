@@ -12,254 +12,229 @@
         <div class="container full-height">
             <div class="row full-height centered-content">
                 <div class="col-md-6 text-center">
-                    @if(newBadge.Name != null)
+                    @if (newBadge.Name != null)
                     {
                         <h3>Created @newBadge.Name!</h3>
                         <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
                     }
-                    else if(newActivity.Name != null)
+                    else if (newActivity.Name != null)
                     {
                         <h3>Created @newActivity.Name!</h3>
                         <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
                     }
-                    
                 </div>
             </div>
         </div>
     }
     else if (isBadge)
     {
-        <h3>Create a new Badge or Activity</h3>
+        <h3>Create a new Badge</h3>
         <Form Model="@newBadge"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@formSize">
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@formSize">
 
-        <div class="d-flex justify-content-center">
-            <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@formSize">
-                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                </RadioGroup>
-            </FormItem>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Name">
-                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
-                    </FormItem>
-                </div>
-                <div class="item">
-                    <FormItem Label="Type">
-                        <Select @bind-value="@isBadge"
-                                DefaultValue="true"
-                                TItem="string"
-                                TItemValue="bool">
-                                <SelectOptions>
-			                        <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
-			                        <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
-		                        </SelectOptions>
-                        </Select>
-                    </FormItem>
-                </div>
-            </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Prerequisite Badges">
-                        <Select Mode="multiple"
-                                @bind-Values="@badgeSelections"
-                                Placeholder="Select one or more badge prerequisites"
-                                TItemValue="Data.Badge"
-                                TItem="Data.Badge">
-                                <SelectOptions>
-			                        @foreach(Data.Badge badge in badges)
-			                        {
-				                        <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
-			                        }
-		                        </SelectOptions>
-                        </Select>
-                    </FormItem>
-                </div>
-            </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Prerequisite Activities">
-                        <Select Mode="multiple"
-                                @bind-Values="@activitySelections"
-                                Placeholder="Select one or more activity prerequisites"
-                                TItemValue="Activity"
-                                TItem="Activity">
-                                <SelectOptions>
-			                        @foreach(Activity activity in activities)
-			                        {
-				                        <SelectOption TItemValue="Activity" TItem="Activity" Value=@activity Label=@activity.Name />
-			                        }
-		                        </SelectOptions>
-                        </Select>
-                    </FormItem>
-                </div>
-            </div>
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                    </RadioGroup>
+                </FormItem>
             </div>
             <div class="row">
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Description">
-                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" style="width:350px;" />
-                    </FormItem>
+                <div class="col-md-6">
+                    <div class="item">
+                        <FormItem Label="Name">
+                            <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
+                        </FormItem>
+                    </div>
                 </div>
-            </div>
-            </div>
-        <div class="d-flex justify-content-center">
-            <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                <button HtmlType="submit" class="btn btn-primary">
-                    Submit
-                </button>
-            </FormItem>
-        </div>
-
-    </Form>
-    }
-    else 
-    {
-        <Form Model="@newActivity"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          Size="@formSize">
-
-        <div class="d-flex justify-content-center">
-            <FormItem Label="Form Size">
-                <RadioGroup @bind-Value="@formSize">
-                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
-                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
-                </RadioGroup>
-            </FormItem>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Name">
-                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
-                    </FormItem>
-                </div>
-                <div class="item">
-                    <FormItem Label="Type">
-                        <Select @bind-value="@isBadge"
-                                DefaultValue="false"
-                                TItem="string"
-                                TItemValue="bool">
+                <div class="col-md-4">
+                    <div class="item">
+                        <FormItem Label="Type">
+                            <Select @bind-value="@isBadge"
+                                    DefaultValue="true"
+                                    TItem="string"
+                                    TItemValue="bool">
                                 <SelectOptions>
-			                        <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
-			                        <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
-		                        </SelectOptions>
-                        </Select>
-                    </FormItem>
+                                    <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+                                    <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="item">
-                    <FormItem Label="Description">
-                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
-                    </FormItem>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="item">
+                        <FormItem Label="Prerequisite Badges">
+                            <Select Mode="multiple"
+                                    @bind-Values="@badgeSelections"
+                                    Placeholder="Select one or more badge prerequisites"
+                                    TItemValue="Data.Badge"
+                                    TItem="Data.Badge">
+                                <SelectOptions>
+                                    @foreach (Data.Badge badge in badges)
+                                    {
+                                        <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+                                    }
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="item">
+                        <FormItem Label="Prerequisite Activities">
+                            <Select Mode="multiple"
+                                    @bind-Values="@activitySelections"
+                                    Placeholder="Select one or more activity prerequisites"
+                                    TItemValue="Activity"
+                                    TItem="Activity">
+                                <SelectOptions>
+                                    @foreach (Activity activity in activities)
+                                    {
+                                        <SelectOption TItemValue="Activity" TItem="Activity" Value=@activity Label=@activity.Name />
+                                    }
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                    </div>
                 </div>
             </div>
-        </div>
-
-      
-        <div class="d-flex justify-content-center">
-            <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                <button HtmlType="submit" class="btn btn-primary">
-                    Submit
-                </button>
-            </FormItem>
-        </div>
-
-    </Form>
+            <div class="row mb-4 mt-4">
+                <div class="col-md-8">
+                    <div class="item">
+                        <FormItem Label="Description">
+                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
+                        </FormItem>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                    <button HtmlType="submit" class="btn btn-primary">
+                        Submit
+                    </button>
+                </FormItem>
+            </div>
+        </Form>
     }
+    else
+    {
+        <h3>Create a new Activity</h3>
+        <Form Model="@newActivity"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@formSize">
 
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                    </RadioGroup>
+                </FormItem>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="item">
+                        <FormItem Label="Name">
+                            <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
+                        </FormItem>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="item">
+                        <FormItem Label="Type">
+                            <Select @bind-value="@isBadge"
+                                    DefaultValue="false"
+                                    TItem="string"
+                                    TItemValue="bool">
+                                <SelectOptions>
+                                    <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+                                    <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="item">
+                        <FormItem Label="Description">
+                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
+                        </FormItem>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                    <button HtmlType="submit" class="btn btn-primary">
+                        Submit
+                    </button>
+                </FormItem>
+            </div>
+        </Form>
+    }
 </div>
-
-
-<style>
-    .full-height {
-        min-height: 100vh;
-    }
-
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-    .avatar-uploader > .ant-upload {
-        width: 128px;
-        height: 128px;
-    }
-
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .row {
-        display: flex;
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-
-    .col-8 {
-        flex-basis: 66.67%;
-        padding-right: 10px;
-    }
-
-    .col-2 {
-        flex-basis: 16.67%;
-        padding-right: 10px;
-    }
-
-    .item {
-        padding: 10px;
-    }
-
-    .imageItem {
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .center {
-        margin: auto;
-        width: 50%;
-        border: 3px solid green;
-        padding: 10px;
-    }
-</style>
 
 @code
 {
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
     private string formSize = AntSizeLDSType.Small;
+    /// <summary>
+    /// This is creating a new Badge
+    /// </summary>
     private Data.Badge newBadge = new();
+    /// <summary>
+    /// This is creating a new Activity
+    /// </summary>
     private Activity newActivity = new();
+    /// <summary>
+    /// If the selection is a badge
+    /// </summary>
     private bool isBadge = true;
+    /// <summary>
+    /// If the created badge or activity has been created
+    /// </summary>
     private bool isCreated = false;
+    /// <summary>
+    /// The list of Badges
+    /// </summary>
     private List<Data.Badge> badges;
+    /// <summary>
+    /// The list of Activities
+    /// </summary>
     private List<Activity> activities;
+    /// <summary>
+    /// The list of Badges to select as pre-requisites
+    /// </summary>
     private IEnumerable<Data.Badge> badgeSelections;
+    /// <summary>
+    /// The list of Activities to select as pre-requisites
+    /// </summary>
     private IEnumerable<Activity> activitySelections;
 
-
+    /// <summary>
+    /// When initialized it will load the content
+    /// </summary>
+    /// <returns>Returns all the selectable badges and activities</returns>
     protected async override Task OnInitializedAsync()
     {
         badges = await EarnablesService.GetAllBadges();
         activities = await EarnablesService.GetAllActivities();
     }
 
+    /// <summary>
+    /// When the newly created badge/activity is made it will be added to the database
+    /// </summary>
+    /// <param name="editContext"></param>
     private async void OnFinish(EditContext editContext)
     {
         if (isBadge)
@@ -277,10 +252,18 @@
         isCreated = true;
     }
 
+    /// <summary>
+    /// If there is a failure it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
     private void GoToBadgeManagement()
     {
         NavigationManager.NavigateTo("/BadgeManagement");

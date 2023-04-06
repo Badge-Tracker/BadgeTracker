@@ -20,7 +20,7 @@
     }
     else
     {
-        <h3>Editing Activity</h3>
+        <h3>Edit Activity</h3>
         <Form Model="@newActivity"
           OnFinish="OnFinish"
           OnFinishFailed="OnFinishFailed"
@@ -35,7 +35,6 @@
                 </RadioGroup>
             </FormItem>
         </div>
-
         <div class="row">
             <div class="col">
                 <div class="item">
@@ -59,47 +58,65 @@
                 </button>
             </FormItem>
         </div>
-
     </Form>
     }
 </div>
 
 @code
 {
-    // ID of the Activity.
+    /// <summary>
+    /// Activity ID
+    /// </summary>
     [Parameter]
     public string Id { get; set; }
 
-    // Component for the sizing of the form.
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
     private string formSize = AntSizeLDSType.Small;
 
-    // The activity itself.
+    /// <summary>
+    /// This is the activity that is currently being edited
+    /// </summary>
     private Activity newActivity = new();
 
-    // Whether the activity has been updated or not.
+    /// <summary>
+    /// Whether the activity has been updated or not
+    /// </summary>
     private bool isUpdated = false;
 
-    // Getting the activity.
+    /// <summary>
+    /// The initial load of the activity
+    /// </summary>
+    /// <returns>The activity that is being updated</returns>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(Id, out int id);
         newActivity = await EarnablesService.GetActivityById(id);
     }
 
-    // When the activity has been finished updating.
+    /// <summary>
+    /// When the activity has been finished updating
+    /// </summary>
+    /// <param name="editContext"></param>
     private async void OnFinish(EditContext editContext)
     {
         await EarnablesService.UpdateActivity(newActivity);
         isUpdated = true;
     }
 
-    // If the update has failed.
+    /// <summary>
+    /// If the update has failed it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
     private void OnFinishFailed(EditContext editContext)
     {
         //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
 
-    // The navigation to badge management page.
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
     private void GoToBadgeManagement()
     {
         NavigationManager.NavigateTo("/BadgeManagement");
