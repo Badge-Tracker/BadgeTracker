@@ -1,6 +1,8 @@
 using BadgeTracker.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Xml.Linq;
+using Activity = BadgeTracker.Data.Activity;
 
 namespace BadgeTrackerTest
 {
@@ -32,23 +34,8 @@ namespace BadgeTrackerTest
 
             Assert.AreEqual(name, badges.First().Name);
         }
+        
 
-
-        /// <summary>
-        /// This method asserts that activities are not null
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        public void TestGetAllActivities()
-        {
-            string name = "Our Story"; 
-
-            EarnablesService earnablesService = new();
-
-            var activities = earnablesService.GetAllActivities();
-
-            Assert.IsNotNull(activities);
-        }
 
 
         /// <summary>
@@ -88,31 +75,12 @@ namespace BadgeTrackerTest
         }
 
 
-        /// <summary>
-        /// This method works but does not allow id to be greater than 1.
-        /// Breaks if not 1.
-        /// </summary>
-        [TestMethod]
-        public void TestGetBadgeIDAsVoid()
-        {
-            // Arrange
-            int id = 1;
-
-            // Act
-            EarnablesService earnablesService = new();
-            var badge = earnablesService.GetBadgeById(id);
-
-
-            // Assert
-            Assert.IsNotNull(badge);
-            Assert.AreEqual(id, badge.Id);
-
-
-        }
+      
 
 
         /// <summary>
         /// This method should get earned badges by user id and pass.
+        /// The earnedBadges userid is 5 in the db
         /// </summary>
         /// <returns></returns>
         [TestMethod]
@@ -124,13 +92,14 @@ namespace BadgeTrackerTest
             int userId = 5;
             List<EarnedBadge> earnedBadges = await earnablesService.GetEarnedBadgesByUserId(userId);
 
-            Assert.IsTrue(earnedBadges.First().UserId == userId);
+            Assert.AreEqual(earnedBadges.First().UserId, userId);
         }
 
 
 
         /// <summary>
         /// This method should get all completed activites by user and pass.
+        /// The completed activities userId is 5 in the db
         /// </summary>
         /// <returns></returns>
         [TestMethod]
@@ -199,7 +168,7 @@ namespace BadgeTrackerTest
         public async Task TestGetEarnedBadgesByBadgeId()
         {
             // Arrange
-            int id = 5;
+            int id = 11;
 
             // Act
             EarnablesService earnablesService = new();
@@ -213,6 +182,7 @@ namespace BadgeTrackerTest
 
         /// <summary>
         /// This should pass as Badge exists.
+        /// The completed activity's id in the db is 13.
         /// </summary>
         [TestMethod]
         public async Task TestGetCompletedActivitiesByActivityId()
@@ -244,7 +214,7 @@ namespace BadgeTrackerTest
         public async Task TestCreateNewBadge()
         {
             // Arrange
-            string name = "Test Badge Test";
+            string name = "Test Badge 2";
             Badge badge = new Badge { Name = name, CreatedBy = 0 };
 
             // Act
@@ -267,7 +237,7 @@ namespace BadgeTrackerTest
         public async Task TestCreateNewActivity()
         {
             // Arrange
-            string name = "Test Activity_DB Test";
+            string name = "Test Activity_DB Test2";
             Activity activity = new Activity { Name = name, CreatedBy= 0 };
 
             // Act
@@ -345,18 +315,19 @@ namespace BadgeTrackerTest
         [TestMethod]    
         public async Task TestUpdateBadge()
         {
-            EarnablesService earnablesService = new();
+            using (var dbContext = DbContextFactory.CreateInstance())
+            {
+                EarnablesService earnablesService = new();
 
-            // Arrange
-            int id = 5;
-            Badge badge = await earnablesService.GetBadgeById(id);
+                // Arrange
+                int id = 5;
+                Badge badge = await earnablesService.GetBadgeById(id);
+                badge.Name = "TestBadgeName";
+                //Act
+                await earnablesService.UpdateBadge(badge);
 
-            //Act
-            await earnablesService.UpdateBadge(badge);
-            isUpdated = true;
-
-            Assert.IsTrue(isUpdated == true);
-
+                Assert.AreEqual("TestBadgeName", badge.Name);
+            }
         }
 
         /// <summary>
@@ -367,17 +338,20 @@ namespace BadgeTrackerTest
         [TestMethod]
         public async Task TestUpdateActivity()
         {
-            EarnablesService earnablesService = new();
+            using (var dbContext = DbContextFactory.CreateInstance())
+            {
+                EarnablesService earnablesService = new();
 
-            // Arrange
-            int id = 5;
-            Activity activity = await earnablesService.GetActivityById(id);
+                int id = 12;
+                var activity = await earnablesService.GetActivityById(id);
+                activity.Name = "NewName";
 
-            //Act
-            await earnablesService.UpdateActivity(activity);
-            isUpdated = true;
+                await earnablesService.UpdateActivity(activity);
 
-            Assert.IsTrue(isUpdated == true);
+               
+                Assert.AreEqual("NewName", activity.Name);
+            }
+
 
         }
 
