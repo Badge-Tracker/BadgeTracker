@@ -76,6 +76,9 @@ else
 
 @code
 {
+    /// <summary>
+    /// id of guide
+    /// </summary>
     [Parameter]
     public string ID { get; set; } 
     /// <summary>
@@ -91,12 +94,22 @@ else
         public string InputEmail { get; set; } = "Enter their email here";
 
     }
-
-    private Model model = new Model(); //creates new model object
-
-    private User user; //creates a new guide object 
-    private string formSize = AntSizeLDSType.Small; //sets default form size
-    private bool isUpdated = false; //boolean variable for is a guide was edited
+    /// <summary>
+    /// //creates new model object
+    /// </summary>
+    private Model model = new Model(); 
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user;  
+    /// <summary>
+    /// sets default form size
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small; 
+    /// <summary>
+    /// boolean variable for is a guide was edited
+    /// </summary>
+    private bool isUpdated = false; 
 
     /// <summary>
     /// runs on page load

@@ -120,21 +120,58 @@ else {
         public string Size { get; set; } = AntSizeLDSType.Small;
     }
 
-
+    /// <summary>
+    /// creates a new model object
+    /// </summary>
     private Model model = new Model();
-
-    private User user; //creates a new guide object
-    private List<EarnedBadge> earnedBadges = new(); //stores all earned badges of the guide
-    private List<CompletedActivity> completedActivities = new(); //stores all earned activities of the guide
-    private List<Data.Badge> badges = new(); //stores list of badges to remove
-    private List<Data.Activity> activities = new(); //stores list of activities to remove
-    private IEnumerable<Data.Badge> badgeSelections; //stores all selected badges
-    private IEnumerable<Data.Activity> activitySelections; //stores all selected activities
-    private bool isUpdated = false; //boolean for if the earnables were removed
-    private bool badgeDeleted = false; //boolean for if a badge has been deleted
-    private bool activityDeleted = false; //boolean for if an activity has been deleted
-    private int badgeCount = 0; //count for amount of badges removed
-    private int activityCount = 0; //count for amount of activites removed
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores all earned badges of the guide
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all earned activities of the guide
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new();
+    /// <summary>
+    /// stores list of badges to remove
+    /// </summary>
+    private List<Data.Badge> badges = new(); 
+    /// <summary>
+    /// stores list of activities to remove
+    /// </summary>
+    private List<Data.Activity> activities = new(); 
+    /// <summary>
+    /// stores all selected badges
+    /// </summary>
+    private IEnumerable<Data.Badge> badgeSelections; 
+    /// <summary>
+    /// stores all selected activities
+    /// </summary>
+    private IEnumerable<Data.Activity> activitySelections; 
+    /// <summary>
+    /// boolean for if the earnables were removed
+    /// </summary>
+    private bool isUpdated = false; 
+    /// <summary>
+    /// boolean for if a badge has been deleted
+    /// </summary>
+    private bool badgeDeleted = false; 
+    /// <summary>
+    /// boolean for if an activity has been deleted
+    /// </summary>
+    private bool activityDeleted = false; 
+    /// <summary>
+    /// count for amount of badges removed
+    /// </summary>
+    private int badgeCount = 0; 
+    /// <summary>
+    /// count for amount of activites removed
+    /// </summary>
+    private int activityCount = 0; 
 
     /// <summary>
     /// runs on page load

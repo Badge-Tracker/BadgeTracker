@@ -83,11 +83,22 @@ else {
         public string InputName { get; set; } = "Enter their name here";
         public string InputEmail { get; set; } = "Enter their email here";
     }
-
-    private Model model = new Model(); //creates a new model object
-    private User user = new(); //creates a new guide object
-    private string formSize = AntSizeLDSType.Small; //sets default form size for model object
-    private bool isCreated = false; //boolean for if a guide was created
+    /// <summary>
+    /// creates a new model object
+    /// </summary>
+    private Model model = new Model();
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user = new(); 
+    /// <summary>
+    /// sets default form size for model object
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small;
+    /// <summary>
+    /// boolean for if a guide was created
+    /// </summary>
+    private bool isCreated = false; 
 
     /// <summary>
     /// runs when form is submitted

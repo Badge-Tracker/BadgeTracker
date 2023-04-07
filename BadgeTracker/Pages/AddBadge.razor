@@ -127,8 +127,11 @@ else
 }
 
 @code {
+    /// <summary>
+    /// variable passed from previous page to know id of guide we are adding earnable to
+    /// </summary>
     [Parameter]
-    public string ID { get; set; } //variable passed from previous page to know id of guide we are adding earnable to
+    public string ID { get; set; } 
 
     /// <summary>
     /// Stores form information
@@ -142,19 +145,55 @@ else
 
     private Model model = new Model(); //creates a new model object
 
-
-    private List<EarnedBadge> earnedBadges = new(); //stores all earned badges of the guide
-    private List<CompletedActivity> completedActivities = new(); //stores all earned activities of the guide
-    private List<Data.Badge> badges = new(); //stores all badges in database
-    private List<Data.Activity> activities = new(); //stores all activities in database
-    private User user; //stores guide data
-    private IEnumerable<Data.Badge> badgeSelections; //stores badges selected from dropdown
-    private IEnumerable<Data.Activity> activitySelections; //stores activities selected from dropdown
-    private bool isAdded = false; //boolean for if an earnable was added to a guide
-    private bool badgeAdded = false; //boolean for if a badge was added
-    private bool activityAdded = false; //boolean for if an activity was added
-    private int badgeCount = 0; //count for total badges added to guide
-    private int activityCount = 0; //count for total activities added to guide
+    /// <summary>
+    /// stores all earned badges of the guide
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all earned activities of the guide
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new(); 
+    /// <summary>
+    /// stores all badges from the database
+    /// </summary>
+    private List<Data.Badge> badges = new(); 
+    /// <summary>
+    ///  //stores all activities from the database
+    /// </summary> 
+    /// 
+    private List<Data.Activity> activities = new(); 
+    /// <summary>
+    /// stores guide data
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores badges selected from dropdown
+    /// </summary>
+    private IEnumerable<Data.Badge> badgeSelections; 
+    /// <summary>
+    /// stores activities selected from dropdown
+    /// </summary>
+    private IEnumerable<Data.Activity> activitySelections;
+    /// <summary>
+    /// boolean for if an earnable was added to a guide
+    /// </summary>
+    private bool isAdded = false; 
+    /// <summary>
+    /// boolean for if a badge was added
+    /// </summary>
+    private bool badgeAdded = false; 
+    /// <summary>
+    /// boolean for if an activity was added
+    /// </summary>
+    private bool activityAdded = false; 
+    /// <summary>
+    /// count for total badges added to guide
+    /// </summary>
+    private int badgeCount = 0; 
+    /// <summary>
+    /// count for total activities added to guide
+    /// </summary>
+    private int activityCount = 0; 
 
     /// <summary>
     /// runs on page load

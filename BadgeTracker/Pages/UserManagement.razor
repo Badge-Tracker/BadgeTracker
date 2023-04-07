@@ -67,11 +67,26 @@
 
 
 @code{
-    private string txtValue = ""; //stores filter value
-    private List<User> users; //list of users
-    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList(); //filtered list of users based on txtValue
-    private Dictionary<int, List<EarnedBadge>> earnedBadges = new(); //dictionary of earned badges per user 
-    private Dictionary<int, List<CompletedActivity>> completedActivities = new(); //dictionary of earned activities per user
+    /// <summary>
+    /// stores filter value
+    /// </summary>
+    private string txtValue = ""; 
+    /// <summary>
+    /// list of users
+    /// </summary>
+    private List<User> users; 
+    /// <summary>
+    /// filtered list of users based on txtValue
+    /// </summary>
+    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList(); 
+    /// <summary>
+    /// dictionary of earned badges per user
+    /// </summary>
+    private Dictionary<int, List<EarnedBadge>> earnedBadges = new(); 
+    /// <summary>
+    /// dictionary of earned activities per user
+    /// </summary>
+    private Dictionary<int, List<CompletedActivity>> completedActivities = new(); 
 
     /// <summary>
     /// runs on page load 

@@ -63,14 +63,27 @@ else
 }
 
 @code {
-
+    /// <summary>
+    /// id of guide
+    /// </summary>
     [Parameter]
-    public string ID { get; set; } //id of guide
-
-    private User user; //creates a new guide object
-    private List<EarnedBadge> earnedBadges = new(); //stores all earned badges
-    private List<CompletedActivity> completedActivities = new(); //stores all completed activities
-    private bool isDeleted = false; //boolean for if a user was deleted
+    public string ID { get; set; } 
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores all earned badges
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all completed activities
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new(); 
+    /// <summary>
+    /// boolean for if a user was deleted
+    /// </summary>
+    private bool isDeleted = false; 
 
     /// <summary>
     /// runs on page load
