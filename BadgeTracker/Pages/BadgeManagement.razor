@@ -39,7 +39,7 @@
     </div>  
 </div>
 
-@if (isFilterByBadge)
+@if (isFilterByBadge) // Filtering a badge
 {
     <Table DataSource="filteredBadges" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
         <ChildContent Context="data">
@@ -77,7 +77,7 @@
         </ChildContent>
     </Table>
 }
-else
+else // Filtering activities
 {
     <Table DataSource="filteredActivities" TItem="Activity" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
         <ChildContent Context="data">
@@ -93,27 +93,58 @@ else
     </Table>
 }
 
-<style>
-    .save {
-        margin-right: 8px;
-    }
-</style>
 
 @code{
+
+    /// <summary>
+    /// The list of Badges 
+    /// </summary>
     private Dictionary<int, List<Earnable>> prereqs = new();
+
+    /// <summary>
+    /// Filtering by badge
+    /// </summary>
     private bool isFilterByBadge = true;
+
+    /// <summary>
+    /// List of badges
+    /// </summary>
     private List<Data.Badge> badges;
+
+    /// <summary>
+    /// List of activities
+    /// </summary>
     private List<Activity> activities;
 
+    /// <summary>
+    /// Value used for searching 
+    /// </summary>
     private string txtValue { get; set; }
+
+    /// <summary>
+    /// List of filtered badges
+    /// </summary>
     private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.ToLower().Contains(txtValue)).ToList();
+
+    /// <summary>
+    /// List of filtered activities
+    /// </summary>
     private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.ToLower().Contains(txtValue)).ToList();
 
+    /// <summary>
+    /// Initializing the main load of data
+    /// </summary>
+    /// <returns>The data that initLists has set up</returns>
     protected async override Task OnInitializedAsync()
     {
         await initLists();
     }
 
+    /// <summary>
+    /// Confirming the deletion of a badge or activity
+    /// </summary>
+    /// <param name="earnable"></param>
+    /// <returns>New updated list of badges or activities</returns>
     private async Task OnDeleteConfirm(Earnable earnable)
     {
         if (isFilterByBadge)
@@ -125,12 +156,19 @@ else
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Initialized list of badges and activities
+    /// </summary>
+    /// <returns>The list of badges or activities</returns>
     private async Task initLists()
     {
         badges = await EarnablesService.GetAllBadges();
         activities = await EarnablesService.GetAllActivities();
     }
 
+    /// <summary>
+    /// Navigate the user to the Creating badge/activity page
+    /// </summary>
     private void CreateBadge()
     {
         NavigationManager.NavigateTo("/CreateBadge");
