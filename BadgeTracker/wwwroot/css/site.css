@@ -165,3 +165,17 @@ h3 {
     border: 3px solid green;
     padding: 10px;
 }
+.save {
+    margin-right: 8px;
+}
+
+.centered-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+    .centered-icon i {
+        margin: 0 auto;
+    }

@@ -74,20 +74,25 @@ else {
     /// <summary>
     /// Stores information about the Form
     /// Size is size of the form options
+    /// InputName is the name of the guide
+    /// InputEmail is the email of the guide
     /// </summary>
     public class Model
     {
         public string Size { get; set; } = AntSizeLDSType.Small;
         public string InputName { get; set; } = "Enter their name here";
         public string InputEmail { get; set; } = "Enter their email here";
-        public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
     }
 
-    private Model model = new Model();
-    private User user = new();
-    private string formSize = AntSizeLDSType.Small;
-    private bool isCreated = false;
+    private Model model = new Model(); //creates a new model object
+    private User user = new(); //creates a new guide object
+    private string formSize = AntSizeLDSType.Small; //sets default form size for model object
+    private bool isCreated = false; //boolean for if a guide was created
 
+    /// <summary>
+    /// runs when form is submitted
+    /// using the UserService we add the new guide to the database and calls StateHasChanged()
+    /// </summary>
     private async Task OnFinish(EditContext editContext)
     {
         await UserService.AddUser(user);
@@ -95,10 +100,18 @@ else {
         StateHasChanged();
     }
 
+    /// <summary>
+    /// runs when OnFinish fails
+    /// console.writelines an error message
+    /// </summary>
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+    /// <summary>
+    /// Called when back button is pressed after adding earnable to guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
     private void GoToUserManagement()
     {
         NavigationManager.NavigateTo("/UserManagement");

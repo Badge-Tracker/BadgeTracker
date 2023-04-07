@@ -9,7 +9,11 @@
 
 
 
-
+@*
+    Shows different page depending on if a badge or activity was removed from a guide.
+    If a badge or activity was not removed it shows a page that allows you to select badges or activities to remove
+    If a badge or activity has not been removed it will show badge and/or activity removed and the guides name who it was removed from
+*@
 @if (isUpdated)
 {
     <div class="container full-height">
@@ -104,29 +108,41 @@ else {
 }
 @code {
     [Parameter]
-    public string ID { get; set; }
-    public int parsedId;
+    public string ID { get; set; } //variable passed from previous page to know id of guide we are removing earnable from
+    public int parsedId; // variable for string id converted to integer
+
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// </summary>
     public class Model
     {
         public string Size { get; set; } = AntSizeLDSType.Small;
-        public string Name { get; set; }
     }
-    public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
+
+
     private Model model = new Model();
 
-    private User user;
-    private List<EarnedBadge> earnedBadges = new();
-    private List<CompletedActivity> completedActivities = new();
-    private List<Data.Badge> badges = new();
-    private List<Data.Activity> activities = new();
-    private IEnumerable<Data.Badge> badgeSelections;
-    private IEnumerable<Data.Activity> activitySelections;
-    private bool isUpdated = false;
-    private bool badgeDeleted = false;
-    private bool activityDeleted = false;
-    private int badgeCount = 0;
-    private int activityCount = 0;
+    private User user; //creates a new guide object
+    private List<EarnedBadge> earnedBadges = new(); //stores all earned badges of the guide
+    private List<CompletedActivity> completedActivities = new(); //stores all earned activities of the guide
+    private List<Data.Badge> badges = new(); //stores list of badges to remove
+    private List<Data.Activity> activities = new(); //stores list of activities to remove
+    private IEnumerable<Data.Badge> badgeSelections; //stores all selected badges
+    private IEnumerable<Data.Activity> activitySelections; //stores all selected activities
+    private bool isUpdated = false; //boolean for if the earnables were removed
+    private bool badgeDeleted = false; //boolean for if a badge has been deleted
+    private bool activityDeleted = false; //boolean for if an activity has been deleted
+    private int badgeCount = 0; //count for amount of badges removed
+    private int activityCount = 0; //count for amount of activites removed
 
+    /// <summary>
+    /// runs on page load
+    /// converts passed id variable to an integer
+    /// gets guide from the id
+    /// gets all earned badges and activites from the guide 
+    /// then goes through all earnedbadges and activities and stores them into badges or activities list
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(ID, out parsedId);
@@ -145,6 +161,12 @@ else {
         }
     }
 
+    /// <summary>
+    /// runs on form submit
+    /// toggles badgeDeleted and/or activityDeleted if needed 
+    /// gets selected removed earnables and using UserService removes the earnables from the guide
+    /// then sets isUpdated to true
+    /// </summary>
     private async Task OnFinish(EditContext editContext)
     {
         if (badgeSelections != null)
@@ -173,11 +195,19 @@ else {
         isUpdated = true;
     }
 
+    /// <summary>
+    /// called when OnFinish fails
+    /// console.writelines an error message
+    /// </summary>
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
 
+    /// <summary>
+    /// Called when back button is pressed after removing earnable from guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
     private void GoToUserManagement()
     {
         NavigationManager.NavigateTo("/UserManagement");

@@ -7,7 +7,10 @@
 
 
 
-
+@*
+    If a guide has not been updated it shows a page that allows you to edit a guide
+    If a guide has been u[dated it will show a page that displays Updated followed by the guide name
+*@
 @if (isUpdated)
 {
     <div class="container full-height">
@@ -59,15 +62,12 @@ else
                 </button>
                 </FormItem>
 
-
             </div>
             <div class="col">
             </div>
         </div>
 
-
         </Form>
-
 
     </div>
              
@@ -77,44 +77,65 @@ else
 @code
 {
     [Parameter]
-    public string ID { get; set; }
+    public string ID { get; set; } 
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// InputName is the name of the guide
+    /// InputEmail is the email of the guide
+    /// </summary>
     public class Model
     {
-
         public string Size { get; set; } = AntSizeLDSType.Small;
         public string InputName { get; set; } = "Enter their name here";
         public string InputEmail { get; set; } = "Enter their email here";
 
-
-
-
-
-        public IEnumerable<string> Names { get; set; } = Array.Empty<string>();
     }
 
-    private Model model = new Model();
+    private Model model = new Model(); //creates new model object
 
-    private User user;
-    private string formSize = AntSizeLDSType.Small;
-    private bool isUpdated = false;
+    private User user; //creates a new guide object 
+    private string formSize = AntSizeLDSType.Small; //sets default form size
+    private bool isUpdated = false; //boolean variable for is a guide was edited
 
+    /// <summary>
+    /// runs on page load
+    /// grabs id from previous page and gets the guide from UserService
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(ID, out int id);
         user = await UserService.GetUserById(id);
     }
 
+    /// <summary>
+    /// runs on form submit
+    /// using UserService update the user
+    /// set isUpdated to true
+    /// calls StateHasChanged()
+    /// </summary>
+    /// <param name="editContext"></param>
+    /// <returns></returns>
     private async Task OnFinish(EditContext editContext)
     {
         await UserService.UpdateUser(user);
         isUpdated = true;
         StateHasChanged();
     }
-
+    /// <summary>
+    /// called when on finished fails
+    /// console.writelines an error message
+    /// </summary>
+    /// <param name="editContext"></param>
+    /// <returns></returns>
     private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
     }
+    /// <summary>
+    /// Called when back button is pressed after adding earnable to guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
     private void GoToUserManagement()
     {
         NavigationManager.NavigateTo("/UserManagement");
