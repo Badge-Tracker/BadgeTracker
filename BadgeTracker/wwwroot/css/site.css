@@ -154,3 +154,7 @@ h3 {
     border: 3px solid green;
     padding: 10px;
 }
+
+.save {
+    margin-right: 8px;
+}
