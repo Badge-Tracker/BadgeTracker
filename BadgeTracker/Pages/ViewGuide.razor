@@ -5,21 +5,12 @@
 @inject IEarnablesService EarnablesService;
 @inject NavigationManager NavigationManager
 
-<style>
-    .full-height {
-        min-height: 100vh;
-    }
-
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-</style>
 
 
+@*
+    If a guide has not been deleted it shows a page that allows you to view and delete a guide
+    If a guide has been deleted it will show a page that displays guide name has been deleted!
+*@
 @if (isDeleted)
 {
     <div class="container full-height">
@@ -72,20 +63,35 @@ else
 }
 
 @code {
-
+    /// <summary>
+    /// id of guide
+    /// </summary>
     [Parameter]
-    public string ID { get; set; }
+    public string ID { get; set; } 
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores all earned badges
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all completed activities
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new(); 
+    /// <summary>
+    /// boolean for if a user was deleted
+    /// </summary>
+    private bool isDeleted = false; 
 
-    private record GameElement(string Id, string Text, string Icon = null)
-    {
-        public List<GameElement> Items { get; set; } = new List<GameElement>();
-    }
-
-    private User user;
-    private List<EarnedBadge> earnedBadges = new();
-    private List<CompletedActivity> completedActivities = new();
-    private bool isDeleted = false;
-
+    /// <summary>
+    /// runs on page load
+    /// grabs id from previous page
+    /// gets guide from UserServices
+    /// gets all earned badges and activities and stores it in appropriate List
+    /// </summary>
+    /// <returns></returns>
     protected async override Task OnInitializedAsync()
     {
         Int32.TryParse(ID, out int id);
@@ -94,13 +100,23 @@ else
         earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
         completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
     }
-
+    /// <summary>
+    /// called when user clicks on delete guide
+    /// deletes guide using UserService 
+    /// sets isDeleted to true
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
     private async Task OnDeleteConfirm(User user)
     {
         await UserService.DeleteUser(user);
         isDeleted = true;
     }
 
+    /// <summary>
+    /// Called when back button is pressed after deleting a guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
     private void GoToUserManagement()
     {
         NavigationManager.NavigateTo("/UserManagement");

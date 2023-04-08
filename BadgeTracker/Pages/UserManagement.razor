@@ -65,35 +65,43 @@
     </ChildContent>
 </Table>
 
-<style>
-    .save {
-        margin-right: 8px;
-    }
-
-    .centered-icon {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-
-    .centered-icon i {
-        margin: 0 auto;
-    }
-</style>
 
 @code{
-    private string txtValue = "";
-    private List<User> users;
-    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList();
-    private Dictionary<int, List<EarnedBadge>> earnedBadges = new();
-    private Dictionary<int, List<CompletedActivity>> completedActivities = new();
+    /// <summary>
+    /// stores filter value
+    /// </summary>
+    private string txtValue = ""; 
+    /// <summary>
+    /// list of users
+    /// </summary>
+    private List<User> users; 
+    /// <summary>
+    /// filtered list of users based on txtValue
+    /// </summary>
+    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList(); 
+    /// <summary>
+    /// dictionary of earned badges per user
+    /// </summary>
+    private Dictionary<int, List<EarnedBadge>> earnedBadges = new(); 
+    /// <summary>
+    /// dictionary of earned activities per user
+    /// </summary>
+    private Dictionary<int, List<CompletedActivity>> completedActivities = new(); 
 
+    /// <summary>
+    /// runs on page load 
+    /// calls initLists()
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         await initLists();
     }
 
+    /// <summary>
+    /// gets all users 
+    /// and earned activities and badges per user and stores them in respective dictionaries
+    /// </summary>
+    /// <returns></returns>
     private async Task initLists()
     {
         users = await UserService.GetAllUsers();
