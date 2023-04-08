@@ -8,6 +8,7 @@ using Activity = BadgeTracker.Data.Activity;
 
 namespace BadgeTrackerTest
 {
+    // Unit tests will pass or fail depending on the data in your database.
     [TestClass]
     public class EarnablesServiceTest
     {
