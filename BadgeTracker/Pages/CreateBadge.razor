@@ -242,11 +242,14 @@
             newBadge.Prerequisites.Badges = badgeSelections?.ToList() ?? new List<Data.Badge>();
             newBadge.Prerequisites.Activities = activitySelections?.ToList() ?? new List<Activity>();
             newBadge.Description = newBadge.Description ?? "";
+            newBadge.CreatedBy = 0; // TODO: Change to user ID when implemented.
             await EarnablesService.CreateNewBadge(newBadge);
         }
         else
         {
-            newActivity.Description = newBadge.Description ?? "";
+            newActivity.Description = newActivity.Description ?? "";
+            newActivity.IsObtainable = true;
+            newActivity.CreatedBy = 0; // TODO: Change to user ID when implemented.
             await EarnablesService.CreateNewActivity(newActivity);
         }
         isCreated = true;

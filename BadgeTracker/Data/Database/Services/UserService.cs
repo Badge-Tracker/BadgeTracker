@@ -235,10 +235,10 @@ namespace BadgeTracker.Data
             try
             {
                 // Delete all completed activities and earned badges.
-                foreach (CompletedActivity completedActivity in dbContext.CompletedActivities)
+                foreach (CompletedActivity completedActivity in dbContext.CompletedActivities.Where(ca => ca.UserId == user.UserId))
                     dbContext.CompletedActivities.Remove(completedActivity);
 
-                foreach (EarnedBadge earnedBadge in dbContext.EarnedBadges)
+                foreach (EarnedBadge earnedBadge in dbContext.EarnedBadges.Where(ea => ea.UserId == user.UserId))
                     dbContext.EarnedBadges.Remove(earnedBadge);
 
                 // Delete user.
