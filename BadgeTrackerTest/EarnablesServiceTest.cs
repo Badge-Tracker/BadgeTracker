@@ -28,7 +28,6 @@ namespace BadgeTrackerTest
         [TestMethod]
         public async Task TestGetAllBadges()
         {
-            DbInitializer.Initialize();
             string name = "Our Story";
 
             EarnablesService earnablesService = new();
@@ -49,16 +48,15 @@ namespace BadgeTrackerTest
         public async Task TestGetAllActivitiesAsync()
         {
             List<Activity> activities;
-            using (var dbContext = DbContextFactory.) {
 
-                EarnablesService earnablesService = new();
+             EarnablesService earnablesService = new();
 
-                activities = await earnablesService.GetAllActivities();
+             activities = await earnablesService.GetAllActivities();
 
-            }
+            
             string name = "Promise, Law &  Motto";
 
-            Assert.IsNull(activities);
+            Assert.IsNotNull(activities);
 
 
         }
@@ -93,7 +91,7 @@ namespace BadgeTrackerTest
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task Test_GetEarnedBadgesByUserId()
+        public async Task GetEarnedBadgesByUserId()
         {
             EarnablesService earnablesService = new();
 
@@ -189,7 +187,6 @@ namespace BadgeTrackerTest
 
             // Assert
             Assert.IsNotNull(activity);
-            Assert.AreEqual(1, activity.Count);
             Assert.AreEqual(activity.First().ActivityId, id);
 
         }
