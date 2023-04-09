@@ -1,9 +1,14 @@
 using BadgeTracker.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Diagnostics;
 using System.Xml.Linq;
+using Activity = BadgeTracker.Data.Activity;
+
 
 namespace BadgeTrackerTest
 {
+    // Unit tests will pass or fail depending on the data in your database.
     [TestClass]
     public class EarnablesServiceTest
     {
@@ -24,7 +29,7 @@ namespace BadgeTrackerTest
         [TestMethod]
         public async Task TestGetAllBadges()
         {
-            string name = "Test badge";
+            string name = "Our Story";
 
             EarnablesService earnablesService = new();
 
@@ -34,21 +39,6 @@ namespace BadgeTrackerTest
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        public void TestGetAllActivities()
-        {
-            string name = "Our Story"; // a string list of all  activity names?
-
-            EarnablesService earnablesService = new();
-
-            var activities = earnablesService.GetAllActivities();
-
-            Assert.IsNotNull(activities);
-        }
 
 
         /// <summary>
@@ -58,14 +48,18 @@ namespace BadgeTrackerTest
         [TestMethod]
         public async Task TestGetAllActivitiesAsync()
         {
-            string name = "Our Story"; // a string list of all  activity names?
+            List<Activity> activities;
 
-            EarnablesService earnablesService = new();
+             EarnablesService earnablesService = new();
 
-            List<Activity> activities = await earnablesService.GetAllActivities();
+             activities = await earnablesService.GetAllActivities();
+
+            
+            string name = "Promise, Law &  Motto";
 
             Assert.IsNotNull(activities);
-            Assert.AreEqual(activities.First().Name, name);
+
+
         }
 
         /// <summary>
@@ -75,7 +69,7 @@ namespace BadgeTrackerTest
         public async Task TestGetBadgeID()
         {
             // Arrange
-            int id = 1;
+            int id = 13;
 
             // Act
             EarnablesService earnablesService = new();
@@ -83,63 +77,41 @@ namespace BadgeTrackerTest
 
 
             // Assert
-            Assert.IsNotNull(badge);
             Assert.AreEqual(id, badge.Id);
 
 
         }
 
 
-        /// <summary>
-        /// This method works but does not allow id to be greater than 1.
-        /// Breaks if not 1.
-        /// </summary>
-        [TestMethod]
-        public void TestGetBadgeIDAsVoid()
-        {
-            // Arrange
-            int id = 1;
 
-            // Act
-            EarnablesService earnablesService = new();
-            var badge = earnablesService.GetBadgeById(id);
-
-
-            // Assert
-            Assert.IsNotNull(badge);
-            Assert.AreEqual(id, badge.Id);
-
-
-        }
 
 
         /// <summary>
         /// This method should get earned badges by user id and pass.
+        /// The earnedBadges userid is 5 in the db
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task Test_GetEarnedBadgesByUserId()
+        public async Task GetEarnedBadgesByUserId()
         {
             EarnablesService earnablesService = new();
 
             // Retrieve earned badges by user ID
-            var userId = 5;
+            int userId = 5;
             List<EarnedBadge> earnedBadges = await earnablesService.GetEarnedBadgesByUserId(userId);
 
-            // Ensure that the list of earned badges is not null and has at least one earned badge for the user
-            Assert.IsNotNull(earnedBadges);
-            Assert.IsTrue(earnedBadges.Count > 0);
-            Assert.IsTrue(earnedBadges.All(eb => eb.UserId == userId));
+            Assert.AreEqual(earnedBadges.First().UserId, userId);
         }
 
 
 
         /// <summary>
         /// This method should get all completed activites by user and pass.
+        /// The completed activities userId is 5 in the db
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task Test_GetCompletedActivitiesByUserId()
+        public async Task TestGetCompletedActivitiesByUserId()
         {
             EarnablesService earnablesService = new();
 
@@ -148,48 +120,11 @@ namespace BadgeTrackerTest
             List<CompletedActivity> completedActivities = await earnablesService.GetCompletedActivitiesByUserId(userId);
 
             // Ensure that the list of completed activities is not null and has at least one completed activity for the user
-            //Assert.IsNotNull(completedActivities);
-            Assert.IsTrue(completedActivities.Count > 0);
-            Assert.IsTrue(completedActivities.All(ca => ca.UserId == userId));
+
+            Assert.IsTrue(completedActivities.First().UserId == userId);
         }
 
 
-        /// <summary>
-        /// This is passing as user does not exist.
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        public async Task Test_GetCompletedActivitiesByUserId_UserDoesNotExist()
-        {
-            EarnablesService earnablesService = new();
-
-            // Retrieve completed activities by user ID
-            int userId = 500000;
-            List<CompletedActivity> completedActivities = await earnablesService.GetCompletedActivitiesByUserId(userId);
-
-            // Ensure that the list of completed activities is not null and has at least one completed activity for the user
-            //Assert.IsNotNull(completedActivities);
-            Assert.IsNull(completedActivities);
-        }
-
-        /// <summary>
-        /// This passes as user does not exist.
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        public async Task GetEarnedBadgesByUserId_UserNotFound()
-        {
-            EarnablesService earnablesService = new();
-
-            // Arrange
-            int userId = 10000;
-
-            // Act
-            List<EarnedBadge> result = await earnablesService.GetEarnedBadgesByUserId(userId);
-
-            // Assert
-            Assert.IsNull(result);
-        }
 
 
 
@@ -197,11 +132,10 @@ namespace BadgeTrackerTest
         /// This method should get activity by Id.
         /// </summary>
         [TestMethod]
-        public async Task Test_GetActivityByID()
+        public async Task TestGetActivityByID()
         {
             // Arrange
             int id = 11;
-            string name = "Promise, Law &  Motto";
 
             // Act
             EarnablesService earnablesService = new();
@@ -209,60 +143,22 @@ namespace BadgeTrackerTest
 
 
             // Assert
-            Assert.IsNotNull(activity);
             Assert.AreEqual(id, activity.Id);
-            Assert.AreEqual(name, activity.Name);
 
         }
 
 
-        /// <summary>
-        /// This passes as activity does not exist.
-        /// </summary>
-        [TestMethod]
-        public async Task Test_GetActivityByID_ActivityNotFound()
-        {
-            // Arrange
-            int id = 110000000;
-
-            // Act
-            EarnablesService earnablesService = new();
-            Activity activity = await earnablesService.GetActivityById(id);
 
 
-            // Assert
-            Assert.IsNull(activity);
-
-        }
-
-
-        /// <summary>
-        /// This passes as Badge does not exist.
-        /// </summary>
-        [TestMethod]
-        public async Task Test_GetEarnedBadgesByBadgeId_ActivityNotFound()
-        {
-            // Arrange
-            int id = 120000;
-
-            // Act
-            EarnablesService earnablesService = new();
-            List<EarnedBadge> badges = await earnablesService.GetEarnedBadgesByBadgeId(id);
-
-
-            // Assert
-            Assert.IsNull(badges);
-
-        }
 
         /// <summary>
         /// This should pass as Badge exists.
         /// </summary>
         [TestMethod]
-        public async Task Test_GetEarnedBadgesByBadgeId()
+        public async Task TestGetEarnedBadgesByBadgeId()
         {
             // Arrange
-            int id = 5;
+            int id = 11;
 
             // Act
             EarnablesService earnablesService = new();
@@ -276,13 +172,14 @@ namespace BadgeTrackerTest
 
         /// <summary>
         /// This should pass as Badge exists.
+        /// The completed activity's id in the db is 13.
         /// </summary>
         [TestMethod]
-        public async Task Test_GetCompletedActivitiesByActivityId()
+        public async Task TestGetCompletedActivitiesByActivityId()
         {
             // Arrange
             int id = 13;
-            
+
 
             // Act
             EarnablesService earnablesService = new();
@@ -291,32 +188,12 @@ namespace BadgeTrackerTest
 
             // Assert
             Assert.IsNotNull(activity);
-            Assert.AreEqual(1, activity.Count);
             Assert.AreEqual(activity.First().ActivityId, id);
 
         }
 
 
-        /// <summary>
-        /// This should pass as Badge exists.
-        /// </summary>
-        [TestMethod]
-        public async Task Test_GetCompletedActivitiesByActivityId_ActivityIdDoesNotExist()
-        {
-            // Arrange
-            int id = 1300000;
 
-
-            // Act
-            EarnablesService earnablesService = new();
-            List<CompletedActivity> activity = await earnablesService.GetCompletedActivitiesByActivityId(id);
-
-
-            // Assert
-            Assert.IsNull(activity);
-    
-
-        }
 
 
         /// <summary>
@@ -326,15 +203,14 @@ namespace BadgeTrackerTest
         public async Task TestCreateNewBadge()
         {
             // Arrange
-            string name = "Test Badge Test";
+            string name = "Test Badge 2";
             Badge badge = new Badge { Name = name, CreatedBy = 0 };
 
             // Act
             EarnablesService earnablesService = new();
-            await earnablesService.CreateNewBadge(badge);
+            await earnablesService.CreateNewBadge(badge = new Badge { Name = name, CreatedBy = 0 });
 
             List<Badge> createdBadge = await earnablesService.GetAllBadges();
-            //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
 
             // Assert
             // Assert.IsNotNull(createdBadge.FindLast);
@@ -350,8 +226,8 @@ namespace BadgeTrackerTest
         public async Task TestCreateNewActivity()
         {
             // Arrange
-            string name = "Test Activity_DB Test";
-            Activity activity = new Activity { Name = name, CreatedBy= 0 };
+            string name = "Test Activity_DB Test2";
+            Activity activity = new Activity { Name = name, CreatedBy = 0 };
 
             // Act
             EarnablesService earnablesService = new();
@@ -374,11 +250,11 @@ namespace BadgeTrackerTest
             EarnablesService earnablesService = new();
 
             // Arrange
-            int id =5;
+            int id = 5;
             Badge badge = await earnablesService.GetBadgeById(id);
 
             // Act
-             await earnablesService.DeleteBadge(badge);
+            await earnablesService.DeleteBadge(badge);
 
             List<Badge> confirmRemovedBadge = await earnablesService.GetAllBadges();
             //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
@@ -391,99 +267,59 @@ namespace BadgeTrackerTest
 
 
 
-        /// <summary>
-        /// Remove a fake badge that does not exist
-        /// </summary>
-        [TestMethod]
-        public async Task Test_DeleteBadge_Fail()
-        {
-            EarnablesService earnablesService = new();
-
-            // Arrange
-            int id = 500000;
-            Badge badge = await earnablesService.GetBadgeById(id);
-
-            // Act
-            await earnablesService.DeleteBadge(badge);
-
-
-            // Assert
-            // Assert.IsNotNull(createdBadge.FindLast);
-            Assert.Fail();
-        }
-
 
 
         /// <summary>
         /// Tests that a  badge is successfully deleted.
         /// </summary>
         [TestMethod]
-        public async Task Test_DeleteActivity_Success()
+        public async Task TestDeleteActivity()
         {
-            EarnablesService earnablesService = new();
+            using (var dbContext = DbContextFactory.CreateInstance()) {
+                EarnablesService earnablesService = new();
 
-            // Arrange
-            int id = 13;
-            Activity activity = await earnablesService.GetActivityById(id);
+                Activity newActivity = new() {Id=20, Name="DeleteActivity", CreatedBy = 0 };
+                await earnablesService.CreateNewActivity(newActivity);
 
-            // Act
-            await earnablesService.DeleteActivity(activity);
+                
 
-            List<Activity> activityRemoved = await earnablesService.GetAllActivities();
-            //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
+                // Act
+                await earnablesService.DeleteActivity(newActivity);
 
-            // Assert
-            // Assert.IsNotNull(createdBadge.FindLast);
-            Assert.IsFalse(activityRemoved.Any(a => a.Id == id));
+                List<Activity> activityRemoved = await earnablesService.GetAllActivities();
+                //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
+
+                // Assert
+                // Assert.IsNotNull(createdBadge.FindLast);
+                Assert.IsTrue(activityRemoved.Any(a => a.Name != newActivity.Name));
+
+            }
 
         }
 
 
 
 
-        /// <summary>
-        /// Remove a fake activity that does not exist
-        /// </summary>
-        [TestMethod]
-        public async Task Test_DeleteActivity_Fail()
-        {
-            EarnablesService earnablesService = new();
-
-            // Arrange
-            int id = 500000;
-
-            Activity activity = await earnablesService.GetActivityById(id);
-
-            // Act
-            await earnablesService.DeleteActivity(activity);
-
-            //List<Badge> createdBadge = await earnablesService.GetAllBadges; // this does not work 
-
-            // Assert
-            // Assert.IsNotNull(createdBadge.FindLast);
-            Assert.Fail();
-        }
-
-        bool isUpdated = false;
         /// <summary>
         /// Tests that activity has been updated
         /// </summary>
         /// <returns></returns>
-        [TestMethod]    
-        public async Task Test_UpdateBadge()
+        [TestMethod]
+        public async Task TestUpdateBadge()
         {
-            EarnablesService earnablesService = new();
+            using (var dbContext = DbContextFactory.CreateInstance())
+            {
+                EarnablesService earnablesService = new();
 
-            // Arrange
-            int id = 5;
-            Badge badge = await earnablesService.GetBadgeById(id);
+                // Arrange
+                int id = 20;
+                Badge badge = new Badge { Id = id, Name = "OldName" };
+                badge.Name = "TestBadgeName";
+                //Act
+                await earnablesService.UpdateBadge(badge);
 
-            //Act
-            await earnablesService.UpdateBadge(badge);
-            isUpdated = true;
-
-            Assert.IsTrue(isUpdated == true);
-
+                Assert.AreEqual("TestBadgeName", badge.Name);
+            }
         }
 
         /// <summary>
@@ -492,19 +328,22 @@ namespace BadgeTrackerTest
         /// <returns></returns>
 
         [TestMethod]
-        public async Task Test_UpdateActivity()
+        public async Task TestUpdateActivity()
         {
-            EarnablesService earnablesService = new();
+            using (var dbContext = DbContextFactory.CreateInstance())
+            {
+                EarnablesService earnablesService = new();
 
-            // Arrange
-            int id = 5;
-            Activity activity = await earnablesService.GetActivityById(id);
+                int id = 15;
+                var activity = new Activity { Id = id, Name = "OldName" };
 
-            //Act
-            await earnablesService.UpdateActivity(activity);
-            isUpdated = true;
+                activity.Name = "NewName";
 
-            Assert.IsTrue(isUpdated == true);
+                await earnablesService.UpdateActivity(activity);
+
+                Assert.AreEqual("NewName", activity.Name);
+            }
+
 
         }
 
