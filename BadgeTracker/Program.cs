@@ -1,21 +1,28 @@
 using BadgeTracker.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
+
+string DB_CONNECTION = "BadgeTrackerConnection";
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+DbContextFactory.SetConnectionString(DB_CONNECTION);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddDbContext<TrackerDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString(DB_CONNECTION));
+});
+builder.Services.AddTransient<IEarnablesService, EarnablesService>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddAntDesign();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

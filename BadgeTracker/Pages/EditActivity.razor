@@ -1,0 +1,125 @@
+﻿@page "/EditActivity/{Id}"
+
+@using System.Text.Json;
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid panel">
+    @if (isUpdated)
+    {
+        <div class="container full-height">
+            <div class="row full-height centered-content">
+                <div class="col-md-6 text-center">
+                    <h3>Updated @newActivity.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h3>Edit Activity</h3>
+        <Form Model="@newActivity"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          Size="@formSize">
+
+        <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                <RadioGroup @bind-Value="@formSize">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Name">
+                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
+                    </FormItem>
+                </div>
+            </div>
+            <div class="col">
+                <div class="item">
+                    <FormItem Label="Description">
+                        <TextArea @bind-value="context.Description" Placeholder="Enter a Description" />
+                    </FormItem>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Submit
+                </button>
+            </FormItem>
+        </div>
+    </Form>
+    }
+</div>
+
+@code
+{
+    /// <summary>
+    /// Activity ID
+    /// </summary>
+    [Parameter]
+    public string Id { get; set; }
+
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small;
+
+    /// <summary>
+    /// This is the activity that is currently being edited
+    /// </summary>
+    private Activity newActivity = new();
+
+    /// <summary>
+    /// Whether the activity has been updated or not
+    /// </summary>
+    private bool isUpdated = false;
+
+    /// <summary>
+    /// The initial load of the activity
+    /// </summary>
+    /// <returns>The activity that is being updated</returns>
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(Id, out int id);
+        newActivity = await EarnablesService.GetActivityById(id);
+    }
+
+    /// <summary>
+    /// When the activity has been finished updating
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async void OnFinish(EditContext editContext)
+    {
+        await EarnablesService.UpdateActivity(newActivity);
+        isUpdated = true;
+    }
+
+    /// <summary>
+    /// If the update has failed it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
+    private void GoToBadgeManagement()
+    {
+        NavigationManager.NavigateTo("/BadgeManagement");
+    }
+}
+

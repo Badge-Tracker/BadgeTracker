@@ -1,0 +1,158 @@
+﻿@page "/EditGuide/{Id}"
+
+@using System.Text.Json;
+@inject IUserService UserService;
+@inject NavigationManager NavigationManager
+
+
+
+
+@*
+    If a guide has not been updated it shows a page that allows you to edit a guide
+    If a guide has been u[dated it will show a page that displays Updated followed by the guide name
+*@
+@if (isUpdated)
+{
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                <h3>Updated @user.Name!</h3>
+                <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h3 class="text-center">Edit A Guide</h3>
+    <div class="container-fluid panel">
+        <Form Model="@user"
+            OnFinish="OnFinish"
+            OnFinishFailed="OnFinishFailed"
+            Size="@formSize">
+            <div class="d-flex justify-content-center">
+                <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                        <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                        <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                    </RadioGroup>
+                </FormItem>
+            </div>
+
+
+
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+
+                <br />
+                <FormItem Label="Name">
+                <Input @bind-Value="@context.Name" />
+                </FormItem>
+
+                <FormItem Label="Email">
+                <Input @bind-Value="@context.Email" />
+                </FormItem>
+
+                <FormItem class="col-md-12 text-center">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Edit Guide
+                </button>
+                </FormItem>
+
+            </div>
+            <div class="col">
+            </div>
+        </div>
+
+        </Form>
+
+    </div>
+             
+}
+                
+
+@code
+{
+    /// <summary>
+    /// id of guide
+    /// </summary>
+    [Parameter]
+    public string ID { get; set; } 
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// InputName is the name of the guide
+    /// InputEmail is the email of the guide
+    /// </summary>
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+        public string InputName { get; set; } = "Enter their name here";
+        public string InputEmail { get; set; } = "Enter their email here";
+
+    }
+    /// <summary>
+    /// //creates new model object
+    /// </summary>
+    private Model model = new Model(); 
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user;  
+    /// <summary>
+    /// sets default form size
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small; 
+    /// <summary>
+    /// boolean variable for is a guide was edited
+    /// </summary>
+    private bool isUpdated = false; 
+
+    /// <summary>
+    /// runs on page load
+    /// grabs id from previous page and gets the guide from UserService
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(ID, out int id);
+        user = await UserService.GetUserById(id);
+    }
+
+    /// <summary>
+    /// runs on form submit
+    /// using UserService update the user
+    /// set isUpdated to true
+    /// calls StateHasChanged()
+    /// </summary>
+    /// <param name="editContext"></param>
+    /// <returns></returns>
+    private async Task OnFinish(EditContext editContext)
+    {
+        await UserService.UpdateUser(user);
+        isUpdated = true;
+        StateHasChanged();
+    }
+    /// <summary>
+    /// called when on finished fails
+    /// console.writelines an error message
+    /// </summary>
+    /// <param name="editContext"></param>
+    /// <returns></returns>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    /// <summary>
+    /// Called when back button is pressed after adding earnable to guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
+    }
+
+}
+

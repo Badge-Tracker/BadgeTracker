@@ -1,0 +1,176 @@
+﻿@page "/BadgeManagement"
+
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager;
+@inject ModalService _modalService;
+
+<div class="container p-2 ">
+    <div class="row">
+        <div class="col">
+            <h3>Badge and Activity Management</h3>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <div class="align-self-end" style="width:200px;">
+                <Input Placeholder="Search for Badge or Activity" @bind-Value="@txtValue" BindOnInput />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+                <Select @bind-value="@isFilterByBadge"
+                        DefaultValue="false"
+                        TItem="string"
+                        TItemValue="bool">
+                    <SelectOptions>
+			            <SelectOption TItemValue="bool" TItem="string" Value="true" Label="Badge" />
+			            <SelectOption TItemValue="bool" TItem="string" Value="false" Label="Activity" />
+		            </SelectOptions>
+                </Select>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <button onclick="@CreateBadge" class="btn btn-primary">
+                Create Badge or Activity
+            </button>
+        </div>
+    </div>  
+</div>
+
+@if (isFilterByBadge) // Filtering a badge
+{
+    <Table DataSource="filteredBadges" TItem="Data.Badge" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+        <ChildContent Context="data">
+            <PropertyColumn Property="b=>b.Name"></PropertyColumn>
+            <PropertyColumn Title="Description" Property="b=>b.Description"></PropertyColumn>
+            <Column TData="string" Title="Badge Prerequisites">
+                <Dropdown>
+                    <Overlay>
+                        <Menu AutoCloseDropdown="@false">
+                            <MenuItem Class="badge-item earned-title">Badges</MenuItem>
+                            @foreach (Data.Badge badge in data.Prerequisites.Badges)
+                            {
+                                <a href="/EditBadge/@badge.Id"><MenuItem Class="badge-item">@badge.Name</MenuItem></a>
+                            }
+                            <MenuItem Class="activity-item earned-title" Style="margin-top: 4px;">Activities</MenuItem>
+                            @foreach (Activity activity in data.Prerequisites.Activities)
+                            {
+                                <a href="/EditActivity/@activity.Id"><MenuItem Class="activity-item">@activity.Name</MenuItem></a>
+                            }
+                        </Menu>
+                    </Overlay>
+                    <ChildContent>
+                        <a class="ant-dropdown-link" @onclick:preventDefault>
+                            Hover to see prerequisites <Icon Type="down" />
+                        </a>
+                    </ChildContent>
+                </Dropdown>
+            </Column>
+            <ActionColumn Title="Action" class="text-center" Width="10%">
+                <a href="EditBadge/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+                <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete badge?" Icon="close-circle">
+                    <a class="text-danger"><i class="material-icons">delete</i></a>
+                </Popconfirm>
+            </ActionColumn>
+        </ChildContent>
+    </Table>
+}
+else // Filtering activities
+{
+    <Table DataSource="filteredActivities" TItem="Activity" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+        <ChildContent Context="data">
+            <PropertyColumn Property="a=>a.Name"></PropertyColumn>
+            <PropertyColumn Title="Description" Property="a=>a.Description"></PropertyColumn>
+            <ActionColumn Title="Action" class="text-center" Width="10%">
+                <a href="EditActivity/@data.Id" class="centered-icon"><i class="material-icons">edit</i></a>
+                <Popconfirm OnConfirm="() => OnDeleteConfirm(data)" Title="Are you sure you want to delete activity?" Icon="close-circle">
+                    <a class="text-danger"><i class="material-icons">delete</i></a>
+                </Popconfirm>
+            </ActionColumn>
+        </ChildContent>
+    </Table>
+}
+
+
+@code{
+
+    /// <summary>
+    /// The list of Badges 
+    /// </summary>
+    private Dictionary<int, List<Earnable>> prereqs = new();
+
+    /// <summary>
+    /// Filtering by badge
+    /// </summary>
+    private bool isFilterByBadge = true;
+
+    /// <summary>
+    /// List of badges
+    /// </summary>
+    private List<Data.Badge> badges;
+
+    /// <summary>
+    /// List of activities
+    /// </summary>
+    private List<Activity> activities;
+
+    /// <summary>
+    /// Value used for searching 
+    /// </summary>
+    private string txtValue { get; set; }
+
+    /// <summary>
+    /// List of filtered badges
+    /// </summary>
+    private List<Data.Badge> filteredBadges => badges.Where(badge => string.IsNullOrEmpty(txtValue) || badge.Name.ToLower().Contains(txtValue)).ToList();
+
+    /// <summary>
+    /// List of filtered activities
+    /// </summary>
+    private List<Activity> filteredActivities => activities.Where(activity => string.IsNullOrEmpty(txtValue) || activity.Name.ToLower().Contains(txtValue)).ToList();
+
+    /// <summary>
+    /// Initializing the main load of data
+    /// </summary>
+    /// <returns>The data that initLists has set up</returns>
+    protected async override Task OnInitializedAsync()
+    {
+        await initLists();
+    }
+
+    /// <summary>
+    /// Confirming the deletion of a badge or activity
+    /// </summary>
+    /// <param name="earnable"></param>
+    /// <returns>New updated list of badges or activities</returns>
+    private async Task OnDeleteConfirm(Earnable earnable)
+    {
+        if (isFilterByBadge)
+            await EarnablesService.DeleteBadge(earnable as Data.Badge);
+        else
+            await EarnablesService.DeleteActivity(earnable as Activity);
+    
+        await initLists();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Initialized list of badges and activities
+    /// </summary>
+    /// <returns>The list of badges or activities</returns>
+    private async Task initLists()
+    {
+        badges = await EarnablesService.GetAllBadges();
+        activities = await EarnablesService.GetAllActivities();
+    }
+
+    /// <summary>
+    /// Navigate the user to the Creating badge/activity page
+    /// </summary>
+    private void CreateBadge()
+    {
+        NavigationManager.NavigateTo("/CreateBadge");
+    }
+}

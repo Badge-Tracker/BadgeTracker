@@ -1,0 +1,290 @@
+﻿@page "/AddBadge/{Id}"
+
+@using System.Text.Json;
+
+
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
+
+
+
+
+
+@*
+    Shows different page depending on if a badge or activity was added to a guide.
+    If a badge or activity has not been added it shows a page that allows you to select badges or activities to add
+    If a badge or activity has been added it will show badge and/or activity added and the guides name who it added to 
+*@
+@if(isAdded)
+{
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                @if(badgeAdded && activityAdded)
+                {
+                   
+                    <h3>Added badges and activities to @user.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+
+
+                }else if (badgeAdded)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Added badges to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Added badge to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    
+                }
+                else if (activityAdded)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Added activities to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Added activity to @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                }
+                
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row panel">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class="text-center">Add Badge or Activity</h3>
+        
+            <Form Model="@model"
+
+                  OnFinish="OnFinish"
+                  OnFinishFailed="OnFinishFailed"
+                  Size="@model.Size">
+                  <div class="d-flex justify-content-center">
+                        <FormItem Label="Form Size">
+                            <RadioGroup @bind-Value="@context.Size">
+                                <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                                <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                            </RadioGroup>
+                        </FormItem>
+                    </div>
+            <FormItem Label="Badges">
+                <Select Mode="multiple"
+                    @bind-Values="@badgeSelections"
+                    Placeholder="Select one or more badges"
+                    TItemValue="Data.Badge"
+                    TItem="Data.Badge">
+                    <SelectOptions>
+			            @foreach(Data.Badge badge in badges)
+			            {
+				            <SelectOption TItemValue="Data.Badge" TItem="Data.Badge" Value=@badge Label=@badge.Name />
+			            }
+		            </SelectOptions>
+                </Select>
+            </FormItem>
+            <FormItem Label="Activities">
+                <Select Mode="multiple"
+                    @bind-Values="@activitySelections"
+                    Placeholder="Select one or more activies"
+                    TItemValue="Data.Activity"
+                    TItem="Data.Activity">
+                    <SelectOptions>
+                        @foreach (Data.Activity activity in activities)
+                        {
+                            <SelectOption TItemValue="Data.Activity" TItem="Data.Activity" Value=@activity Label=@activity.Name />
+                        }
+                    </SelectOptions>
+                </Select>
+            </FormItem>
+
+                <div class="d-flex justify-content-center">
+                        
+                    <button HtmlType="submit" class="btn btn-primary">
+                        Add
+                    </button>
+                        
+                </div>
+            </Form>
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
+}
+
+@code {
+    /// <summary>
+    /// variable passed from previous page to know id of guide we are adding earnable to
+    /// </summary>
+    [Parameter]
+    public string ID { get; set; } 
+
+    /// <summary>
+    /// Stores form information
+    /// Size is size of the form options
+    /// </summary>
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+
+    }
+
+    private Model model = new Model(); //creates a new model object
+
+    /// <summary>
+    /// stores all earned badges of the guide
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all earned activities of the guide
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new(); 
+    /// <summary>
+    /// stores all badges from the database
+    /// </summary>
+    private List<Data.Badge> badges = new(); 
+    /// <summary>
+    ///  //stores all activities from the database
+    /// </summary> 
+    /// 
+    private List<Data.Activity> activities = new(); 
+    /// <summary>
+    /// stores guide data
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores badges selected from dropdown
+    /// </summary>
+    private IEnumerable<Data.Badge> badgeSelections; 
+    /// <summary>
+    /// stores activities selected from dropdown
+    /// </summary>
+    private IEnumerable<Data.Activity> activitySelections;
+    /// <summary>
+    /// boolean for if an earnable was added to a guide
+    /// </summary>
+    private bool isAdded = false; 
+    /// <summary>
+    /// boolean for if a badge was added
+    /// </summary>
+    private bool badgeAdded = false; 
+    /// <summary>
+    /// boolean for if an activity was added
+    /// </summary>
+    private bool activityAdded = false; 
+    /// <summary>
+    /// count for total badges added to guide
+    /// </summary>
+    private int badgeCount = 0; 
+    /// <summary>
+    /// count for total activities added to guide
+    /// </summary>
+    private int activityCount = 0; 
+
+    /// <summary>
+    /// runs on page load
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        await init();
+    }
+
+    /// <summary>
+    /// called when page gets loaded
+    /// converts passed id variable to an integer 
+    /// gets guide from the id
+    /// gets all earned badges and activites from the guide as well as all badges and activities in database
+    /// compares earned badges to all badges as to only show badges that havent yet been earned
+    /// compares earned activites to all activities as to only show activities that havent yet been earned
+    /// </summary>
+    private async Task init()
+    {
+        Int32.TryParse(ID, out int id);
+
+        user = await UserService.GetUserById(id);
+
+        earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(id) ?? new();
+        completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(id) ?? new();
+
+        badges = await EarnablesService.GetAllBadges();
+        activities = await EarnablesService.GetAllActivities();
+
+        foreach (EarnedBadge badge in earnedBadges)
+        {
+            badges.RemoveAll(b => b.Id == badge.BadgeId);
+        }
+        foreach (CompletedActivity activity in completedActivities)
+        {
+            activities.RemoveAll(b => b.Id == activity.ActivityId);
+        }
+    }
+    /// <summary>
+    /// called when form is submitted
+    /// checks for any selected badges and activities, if none selected nothing happens
+    /// if a badge or activity was selected 
+    /// sets either badgeAdded or activityAdded to true if added
+    /// increments appropriate count for amount of badges or activities earned
+    /// changes isAdded to true
+    /// calls stateHasChanged() to refresh webpage to display appropriate message
+    /// </summary>
+    private async Task OnFinish(EditContext editContext)
+    {
+        if (badgeSelections == null && activitySelections == null) return;
+
+        if (badgeSelections != null)
+        {
+            //set bool to true 
+            badgeAdded = true;
+            foreach (Data.Badge badge in badgeSelections)
+            {
+                await UserService.AddBadgeToUser(user, badge);
+                badgeCount++;
+            }
+        }
+        if (activitySelections != null)
+        {
+            //set bool to true
+            activityAdded = true;
+            foreach (Data.Activity activity in activitySelections)
+            {
+                await UserService.AddActivityToUser(user, activity);
+                activityCount++;
+            }
+        }
+        isAdded = true;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// called if OnFinish() fails
+    /// console.writelines an error message
+    /// </summary>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    /// <summary>
+    /// Called when back button is pressed after adding earnable to guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
+    }
+
+}

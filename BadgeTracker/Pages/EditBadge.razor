@@ -1,0 +1,206 @@
+﻿@page "/EditBadge/{Id}"
+
+@using System.Text.Json;
+@using BadgeTracker.Data;
+
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
+
+
+<div class="container-fluid panel">
+    @if (isUpdated)
+    {
+        <div class="container full-height">
+            <div class="row full-height centered-content">
+                <div class="col-md-6 text-center">
+                    <h3>Updated @newBadge.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToBadgeManagement">Back to Badges and Activities</button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h3>Edit Badge</h3>
+        <Form Model="@newBadge"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          Size="@formSize">
+
+        <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                <RadioGroup @bind-Value="@formSize">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="item">
+                    <FormItem Label="Name">
+                        <Input @bind-Value="@context.Name" Placeholder="Enter a Name" />
+                    </FormItem>
+                </div>
+            </div>
+            </div>
+            <div class="row">
+            <div class="col-md-6">
+                <div class="item">
+                    <FormItem Label="Prerequisite Badges">
+                        <Select Mode="multiple"
+                                DataSource="@badges"
+                                @bind-Values="@badgeSelectionsEnumerable"
+                                Placeholder="Select prerequisites"
+                                TItemValue="Data.Badge"
+                                TItem="Data.Badge"
+                                DefaultValues="@badgeSelectionsEnumerable"
+                                LabelName="@nameof(Data.Badge.Name)">
+                        </Select>
+                    </FormItem>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="item">
+                    <FormItem Label="Prerequisite Activities">
+                        <Select Mode="multiple"
+                                DataSource="@activities"
+                                @bind-Values="@activitySelectionsEnumerable"
+                                Placeholder="Select prerequisites"
+                                TItemValue="Activity"
+                                TItem="Activity"
+                                DefaultValues="@activitySelectionsEnumerable"
+                                LabelName="@nameof(Activity.Name)">
+                        </Select>
+                    </FormItem>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="item">
+                            <FormItem Label="Description">
+                            <TextArea @bind-value="context.Description" Placeholder="Enter a Description"/>
+                            </FormItem>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <button HtmlType="submit" class="btn btn-primary">
+                    Submit
+                </button>
+            </FormItem>
+        </div>
+
+    </Form>
+    }
+</div>
+
+@code
+{
+    /// <summary>
+    /// This is the id of the badge
+    /// </summary>
+    [Parameter]
+    public string Id { get; set; }
+
+    /// <summary>
+    /// This enables the user to select their viewing style, small/med/large. Auto to Small.
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small;
+    /// <summary>
+    /// Updating badge will be identified by badge ID.
+    /// </summary>
+    private Data.Badge newBadge = new();
+    /// <summary>
+    /// If the badge has been successfully updated.
+    /// </summary>
+    private bool isUpdated = false;
+    /// <summary>
+    /// The list of badges
+    /// </summary>
+    private List<Data.Badge> badges;
+    /// <summary>
+    /// The list of activities
+    /// </summary>
+    private List<Activity> activities;
+    /// <summary>
+    /// The list of badge selections
+    /// </summary>
+    private List<Data.Badge> badgeSelections = new();
+    /// <summary>
+    /// Counting off the Badge selections
+    /// </summary>
+    private IEnumerable<Data.Badge> badgeSelectionsEnumerable;
+    /// <summary>
+    /// The activity selections
+    /// </summary>
+    private List<Activity> activitySelections = new();
+    /// <summary>
+    /// Counting off the Activity selections
+    /// </summary>
+    private IEnumerable<Activity> activitySelectionsEnumerable;
+
+
+    /// <summary>
+    /// The initialized badge loaded content
+    /// </summary>
+    /// <returns>Returns all the badges and activities that are associated to that badge ID</returns>
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(Id, out int id);
+        newBadge = await EarnablesService.GetBadgeById(id);
+
+        badges = await EarnablesService.GetAllBadges();
+        badges = badges.Where(b => b.Id != newBadge.Id).ToList();
+
+        activities = await EarnablesService.GetAllActivities();
+
+        // Due to an obscure issue with how AntDesign is comparing the badges, this has to be used
+        // to populate the prerequisties.
+        foreach(Data.Badge badge in newBadge.Prerequisites.Badges)
+        {
+            badgeSelections.Add(badges.FirstOrDefault(b => b.Id == badge.Id));
+        }
+        badgeSelectionsEnumerable = badgeSelections;
+
+        foreach (Activity activity in newBadge.Prerequisites.Activities)
+        {
+            activitySelections.Add(activities.FirstOrDefault(a => a.Id == activity.Id));
+        }
+        activitySelectionsEnumerable = activitySelections;
+    }
+
+    /// <summary>
+    /// When the selected badge has been updated
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async void OnFinish(EditContext editContext)
+    {
+        newBadge.Prerequisites.Badges = badgeSelectionsEnumerable?.ToList() ?? new List<Data.Badge>();
+        newBadge.Prerequisites.Activities = activitySelectionsEnumerable?.ToList() ?? new List<Activity>();
+        await EarnablesService.UpdateBadge(newBadge);
+        isUpdated = true;
+    }
+
+    /// <summary>
+    /// When the edit has failed it will be noted here, should there be a disconnect etc. 
+    /// </summary>
+    /// <param name="editContext"></param>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    /// <summary>
+    /// This will redirect a user to the badge management page
+    /// </summary>
+    private void GoToBadgeManagement()
+    {
+        NavigationManager.NavigateTo("/BadgeManagement");
+    }
+}
+

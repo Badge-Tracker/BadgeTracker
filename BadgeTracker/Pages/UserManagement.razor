@@ -1,0 +1,121 @@
+﻿@page "/UserManagement"
+@using System.Collections.Generic
+@using System.Linq
+@using AntDesign
+@using AntDesign.TableModels
+
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
+
+
+<h3>Girl Guides</h3>
+
+<a href="AddGuide">
+    <i class="material-icons">
+        person_add
+    </i>
+    Add a New Girl Guide
+</a>
+
+<div class="col d-flex justify-content-end">
+    <div class="align-self-end" style="width:200px;">
+        <Input Placeholder="Search for User" @bind-Value="@txtValue" BindOnInput />
+        <br />
+        <br />
+    </div>
+</div>
+
+
+<Table DataSource="@filteredUsers" TItem="User" RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+    <ChildContent Context="data">
+        <Column TData="string" Title="Name">
+            <a href="ViewGuide/@data.UserId">@data.Name</a>
+        </Column>
+
+        <Column TData="string" Title="Earned Badges">
+            <Dropdown>
+                <Overlay>
+                    <Menu AutoCloseDropdown="@false">
+                        <MenuItem Class="badge-item earned-title">Badges</MenuItem>
+                        @foreach (EarnedBadge badge in earnedBadges[data.UserId])
+                        {
+                            <a href="/EditBadge/@badge.BadgeId"><MenuItem Class="badge-item">@badge.Badge.Name</MenuItem></a>
+                        }
+                        <MenuItem Class="activity-item earned-title" Style="margin-top: 4px;">Activities</MenuItem>
+                        @foreach (CompletedActivity activity in completedActivities[data.UserId])
+                        {
+                            <a href="/EditActivity/@activity.ActivityId"><MenuItem Class="activity-item">@activity.Activity.Name</MenuItem></a>
+                        }
+                    </Menu>
+                </Overlay>
+                <ChildContent>
+                    <a class="ant-dropdown-link" @onclick:preventDefault>
+                        Hover to see badges <Icon Type="down" />
+                    </a>
+                </ChildContent>
+            </Dropdown>
+        </Column>
+        <ActionColumn Title="Edit Person" Width="10%">
+            <a href="EditGuide/@data.UserId" class="centered-icon"><i class="material-icons">edit</i></a>
+        </ActionColumn>
+        <ActionColumn Title="Badges" class="text-center" Width="10%">
+            <a href="AddBadge/@data.UserId"><i class="material-icons">add_box</i></a>
+            <a href="DeleteBadge/@data.UserId"><a class="text-danger"><i class="material-icons">delete</i></a></a>
+        </ActionColumn>
+    </ChildContent>
+</Table>
+
+
+@code{
+    /// <summary>
+    /// stores filter value
+    /// </summary>
+    private string txtValue = ""; 
+    /// <summary>
+    /// list of users
+    /// </summary>
+    private List<User> users; 
+    /// <summary>
+    /// filtered list of users based on txtValue
+    /// </summary>
+    private List<User> filteredUsers => users.Where(user => string.IsNullOrEmpty(txtValue) || user.Name.ToLower().Contains(txtValue.ToLower())).ToList(); 
+    /// <summary>
+    /// dictionary of earned badges per user
+    /// </summary>
+    private Dictionary<int, List<EarnedBadge>> earnedBadges = new(); 
+    /// <summary>
+    /// dictionary of earned activities per user
+    /// </summary>
+    private Dictionary<int, List<CompletedActivity>> completedActivities = new(); 
+
+    /// <summary>
+    /// runs on page load 
+    /// calls initLists()
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        await initLists();
+    }
+
+    /// <summary>
+    /// gets all users 
+    /// and earned activities and badges per user and stores them in respective dictionaries
+    /// </summary>
+    /// <returns></returns>
+    private async Task initLists()
+    {
+        users = await UserService.GetAllUsers();
+        foreach (User user in users)
+        {
+            if (!earnedBadges.ContainsKey(user.UserId))
+                earnedBadges.Add(user.UserId, await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new());
+            else
+                earnedBadges[user.UserId] = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
+
+            if (!completedActivities.ContainsKey(user.UserId))
+                completedActivities.Add(user.UserId, await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new());
+            else
+                completedActivities[user.UserId] = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
+        }
+    }
+}

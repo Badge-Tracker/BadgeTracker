@@ -1,0 +1,253 @@
+﻿@page "/DeleteBadge/{Id}"
+
+@inject IUserService UserService;
+@inject IEarnablesService EarnablesService;
+@inject NavigationManager NavigationManager
+@using System.Text.Json;
+@using System.Linq;
+
+
+
+
+@*
+    Shows different page depending on if a badge or activity was removed from a guide.
+    If a badge or activity was not removed it shows a page that allows you to select badges or activities to remove
+    If a badge or activity has not been removed it will show badge and/or activity removed and the guides name who it was removed from
+*@
+@if (isUpdated)
+{
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                @if (badgeDeleted && activityDeleted)
+                {
+
+                    <h3>Deleted badges and activities from @user.Name!</h3>
+                    <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+
+                }
+                else if (badgeDeleted)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Deleted badges from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Deleted badge from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+
+                }
+                else if (activityDeleted)
+                {
+                    @if (badgeCount > 1)
+                    {
+                        <h3>Deleted activities from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                    else
+                    {
+                        <h3>Deleted activity from @user.Name!</h3>
+                        <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+}
+else {
+    <div class="row panel">
+        <div class="col">
+        </div>
+        <div class="col">
+            <h3 class ="text-center">Delete Badge or Activity</h3>
+            <Form Model="@model"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@model.Size">
+
+                <FormItem Label="Badges">
+                    <Select Mode="multiple"
+                        DataSource="@badges"
+                        @bind-Values="@badgeSelections"
+                        Placeholder="Select one or more badges"
+                        TItemValue="Data.Badge"
+                        TItem="Data.Badge"
+                        LabelName="@nameof(Data.Badge.Name)">
+                    </Select>
+                </FormItem>
+
+                <FormItem Label="Activities">
+                    <Select Mode="multiple"
+                        DataSource="@activities"
+                        @bind-Values="@activitySelections"
+                        Placeholder="Select one or more activities"
+                        TItemValue="Activity"
+                        TItem="Activity"
+                        LabelName="@nameof(Activity.Name)">
+                    </Select>
+                </FormItem>
+
+
+                <div class="d-flex justify-content-center">
+                    <Popconfirm Title="Are you sure you want to delete these?" Icon="close-circle">
+                        <button HtmlType="submit" class="btn btn-danger">
+                            Delete
+                        </button>
+                    </Popconfirm>
+
+                </div>
+            </Form>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public string ID { get; set; } //variable passed from previous page to know id of guide we are removing earnable from
+    public int parsedId; // variable for string id converted to integer
+
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// </summary>
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+    }
+
+    /// <summary>
+    /// creates a new model object
+    /// </summary>
+    private Model model = new Model();
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user; 
+    /// <summary>
+    /// stores all earned badges of the guide
+    /// </summary>
+    private List<EarnedBadge> earnedBadges = new(); 
+    /// <summary>
+    /// stores all earned activities of the guide
+    /// </summary>
+    private List<CompletedActivity> completedActivities = new();
+    /// <summary>
+    /// stores list of badges to remove
+    /// </summary>
+    private List<Data.Badge> badges = new(); 
+    /// <summary>
+    /// stores list of activities to remove
+    /// </summary>
+    private List<Data.Activity> activities = new(); 
+    /// <summary>
+    /// stores all selected badges
+    /// </summary>
+    private IEnumerable<Data.Badge> badgeSelections; 
+    /// <summary>
+    /// stores all selected activities
+    /// </summary>
+    private IEnumerable<Data.Activity> activitySelections; 
+    /// <summary>
+    /// boolean for if the earnables were removed
+    /// </summary>
+    private bool isUpdated = false; 
+    /// <summary>
+    /// boolean for if a badge has been deleted
+    /// </summary>
+    private bool badgeDeleted = false; 
+    /// <summary>
+    /// boolean for if an activity has been deleted
+    /// </summary>
+    private bool activityDeleted = false; 
+    /// <summary>
+    /// count for amount of badges removed
+    /// </summary>
+    private int badgeCount = 0; 
+    /// <summary>
+    /// count for amount of activites removed
+    /// </summary>
+    private int activityCount = 0; 
+
+    /// <summary>
+    /// runs on page load
+    /// converts passed id variable to an integer
+    /// gets guide from the id
+    /// gets all earned badges and activites from the guide 
+    /// then goes through all earnedbadges and activities and stores them into badges or activities list
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        Int32.TryParse(ID, out parsedId);
+        user = await UserService.GetUserById(parsedId);
+
+        earnedBadges = await EarnablesService.GetEarnedBadgesByUserId(user.UserId) ?? new();
+        completedActivities = await EarnablesService.GetCompletedActivitiesByUserId(user.UserId) ?? new();
+
+        foreach (EarnedBadge badge in earnedBadges)
+        {
+            badges.Add(await EarnablesService.GetBadgeById(badge.BadgeId));
+        }
+        foreach (CompletedActivity activity in completedActivities)
+        {
+            activities.Add(await EarnablesService.GetActivityById(activity.ActivityId));
+        }
+    }
+
+    /// <summary>
+    /// runs on form submit
+    /// toggles badgeDeleted and/or activityDeleted if needed 
+    /// gets selected removed earnables and using UserService removes the earnables from the guide
+    /// then sets isUpdated to true
+    /// </summary>
+    private async Task OnFinish(EditContext editContext)
+    {
+        if (badgeSelections != null)
+        {
+            badgeDeleted = true;
+            foreach (Data.Badge badge in badgeSelections)
+            {
+                List<EarnedBadge> earnedBadges = await EarnablesService.GetEarnedBadgesByBadgeId(badge.Id);
+                EarnedBadge badgeToRemove = earnedBadges.Where(b => b.UserId == parsedId).FirstOrDefault();
+                await UserService.RemoveBadgeFromUser(badgeToRemove);
+                badgeCount++;
+            }
+        }
+
+        if (activitySelections != null)
+        {
+            activityDeleted = true;
+            foreach (Activity activity in activitySelections)
+            {
+                List<CompletedActivity> completedActivities = await EarnablesService.GetCompletedActivitiesByActivityId(activity.Id);
+                CompletedActivity activityToRemove = completedActivities.Where(b => b.UserId == parsedId).FirstOrDefault();
+                await UserService.RemoveActivityFromUser(activityToRemove);
+                activityCount++;
+            }
+        }
+        isUpdated = true;
+    }
+
+    /// <summary>
+    /// called when OnFinish fails
+    /// console.writelines an error message
+    /// </summary>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+
+    /// <summary>
+    /// Called when back button is pressed after removing earnable from guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
+    }
+
+}

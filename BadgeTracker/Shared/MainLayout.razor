@@ -1,19 +1,84 @@
 ﻿@inherits LayoutComponentBase
 
+
+<Menu Mode=MenuMode.Horizontal class="nav-bg">
+    <MenuItem Key="app" class="menuitem">
+        <a href="/UserManagement">Girl Guides</a>
+    </MenuItem>
+    <MenuItem Key="badge" class="menuitem">
+        <a href="/BadgeManagement">Badges and Activities</a>
+    </MenuItem>
+    <div class="floatright">
+        <a href="/" style="font-size:20px; margin-right:20px;">
+            Badge Tracker
+        </a>
+        <a href="/">
+            <Icon Type="home" class="icon" style="font-size: 20px; margin-right:20px;"/>
+        </a>
+        <a href="/">
+            <Icon Type="logout" Theme="outline" style="font-size: 20px; margin-right:20px;" />
+        </a>
+    </div>
+</Menu>
+
+@code
+{
+    RenderFragment sub1Title =
+        @<Template>
+            <Icon Type="setting" Theme="outline"></Icon>
+            Navigation Three - Submenu
+        </Template>;
+}
+
 <PageTitle>BadgeTracker</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    @*<div class="sidebar">
+            <NavMenu />
+        </div>*@
 
     <main>
-        <div class="top-row px-4">
+        @*<div class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+        </div>*@
 
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+<style>
+    .menuitem {
+        color: goldenrod;
+        font-weight: bold;
+    }
+
+        a.menuitem :hover {
+            color: black;
+        }
+
+    .menuitem :visited {
+        color: black;
+        font-weight: bold;
+    }
+
+    menuitem ant-menu-item ant-menu-item-selected {
+        background-color: white;
+    }
+
+    .floatright {
+        float: right;
+        justify-content: space-evenly;
+        padding-right: 20px;
+    }
+
+    .icon {
+        height:50px;
+    }
+
+    img {
+        width: 160px;
+        height: 40px;
+    }
+</style>

@@ -1,0 +1,131 @@
+﻿@page "/AddGuide"
+
+
+@inject IUserService UserService;
+@inject NavigationManager NavigationManager
+@using System.Text.Json;
+
+
+
+
+@*
+    If a guide has not been added it shows a page that allows you to create a new guide
+    If a guide has been added it will show a page that displays Created Girl Guide followed by the guide name
+*@
+@if (isCreated)
+{
+
+    <div class="container full-height">
+        <div class="row full-height centered-content">
+            <div class="col-md-6 text-center">
+                <h3>Created Girl Guide @user.Name!</h3>
+                <button class="btn btn-primary" @onclick="GoToUserManagement">Back to Girl Guides</button>
+            </div>
+        </div>
+    </div>
+}
+else {
+    <h3 class="text-center">Add a Guide</h3>
+    <div class="container-fluid panel">
+        <Form Model="@user"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed"
+              Size="@formSize">
+          <div class="d-flex justify-content-center">
+            <FormItem Label="Form Size">
+                    <RadioGroup @bind-Value="@formSize">
+                    <Radio RadioButton Value="@AntSizeLDSType.Small">Small</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Default">Default</Radio>
+                    <Radio RadioButton Value="@AntSizeLDSType.Large">Large</Radio>
+                </RadioGroup>
+            </FormItem>
+        </div>
+
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+                <FormItem Label="Name">
+                <Input @bind-Value="@context.Name" />
+                </FormItem>
+
+                <FormItem Label="Email">
+                <Input @bind-Value="@context.Email" />
+                </FormItem>
+                <FormItem class="col-md-12 text-center">
+                    <button HtmlType="submit" class="btn btn-primary">Add Guide</button>
+                </FormItem>
+            </div>
+
+            <div class="col">
+            </div>
+                          
+        </div>
+        </Form>
+
+    </div>
+                    
+
+}
+
+
+@code
+{
+    /// <summary>
+    /// Stores information about the Form
+    /// Size is size of the form options
+    /// InputName is the name of the guide
+    /// InputEmail is the email of the guide
+    /// </summary>
+    public class Model
+    {
+        public string Size { get; set; } = AntSizeLDSType.Small;
+        public string InputName { get; set; } = "Enter their name here";
+        public string InputEmail { get; set; } = "Enter their email here";
+    }
+    /// <summary>
+    /// creates a new model object
+    /// </summary>
+    private Model model = new Model();
+    /// <summary>
+    /// creates a new guide object
+    /// </summary>
+    private User user = new(); 
+    /// <summary>
+    /// sets default form size for model object
+    /// </summary>
+    private string formSize = AntSizeLDSType.Small;
+    /// <summary>
+    /// boolean for if a guide was created
+    /// </summary>
+    private bool isCreated = false; 
+
+    /// <summary>
+    /// runs when form is submitted
+    /// using the UserService we add the new guide to the database and calls StateHasChanged()
+    /// </summary>
+    private async Task OnFinish(EditContext editContext)
+    {
+        await UserService.AddUser(user);
+        isCreated = true;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// runs when OnFinish fails
+    /// console.writelines an error message
+    /// </summary>
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(model)}");
+    }
+    /// <summary>
+    /// Called when back button is pressed after adding earnable to guide
+    /// redirects user back to Girl Guide page
+    /// </summary>
+    private void GoToUserManagement()
+    {
+        NavigationManager.NavigateTo("/UserManagement");
+    }
+}
+
