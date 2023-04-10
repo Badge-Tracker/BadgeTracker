@@ -361,5 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/BadgeTracker/BadgeTracker.db-shm
-/BadgeTracker/BadgeTracker.db-wal
